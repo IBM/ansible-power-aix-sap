@@ -1,0 +1,137 @@
+---
+#   Copyright 2021 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+###########################################
+# tasks file for sap_start_pre
+###########################################
+
+###########################################
+# PreCheck SAP sid
+###########################################
+- name: Check sap_sid variable {{ sap_sid }}
+  fail:
+    msg: "Error: sap_sid is empty. Please define."
+  when: (sap_sid is not defined) or (sap_sid is none)
+  
+###########################################
+# PreCheck SAP nr
+###########################################
+- name: Check sap_nr {{ sap_nr }}
+  fail:
+    msg: "Error: sap_nr is empty. Please define."
+  when: sap_nr is none
+
+###########################################
+# Check SAP SID
+###########################################
+- name: Check SAP Services
+  shell:  "grep {{ sap_sid }} /usr/sap/sapservices | grep -v '#'"
+  register: check_sap_service
+  ignore_errors: True
+  no_log: True
+
+- name: Fail if SAP System does not exist
+  fail:
+    msg: SAP system {{ sap_sid  }} does not exist.
+  when: check_sap_service.stdout == ""
+  
+###########################################
+# Get if there is any running service
+###########################################
+- name: Set variable for SAP service profile
+  set_fact:
+    check_sap_service:  "{{ check_sap_service.stdout_lines[0].split()[4] }}"
+    
+###########################################
+# Check running SAP Service
+###########################################
+- name: Get sid from profile
+  shell: grep -w 'SAPSYSTEM'  "{{ check_sap_service|replace('pf=', '') }}"
+  register: sap_sid_profile
+  
+- name: Check running SAP instances {{ check_sap_service.stdout }}
+  shell: "{{ sapctr_exe_dir }}/sapcontrol -nr {{ sap_sid_profile.stdout.split()[2] }} -function GetSystemInstanceList"
+  environment:
+    LIBPATH: "{{ sapctr_exe_dir }}"
+  args:
+    chdir: "{{ sapctr_exe_dir }}"
+  register: result_rid
+  failed_when: result_rid.rc >= 2
+
+- name: Fail if SAP service cannot connect
+  fail:
+    msg: "No SAP service is running"
+  failed_when: result_rid.rc == 1
+  
+###########################################
+# Check running instances
+###########################################
+
+####################
+# sap_nr is defined
+####################
+- name: Check running SAP instances for sap_nr
+  shell: "{{ sapctr_exe_dir }}/sapcontrol -nr {{ sap_sid_profile.stdout.split()[2] }} -function GetSystemInstanceList | grep {{ ansible_hostname }} | grep -i gray | sort -k 5nr | grep '{{ ansible_hostname }}, {{ sap_nr }}'"
+  environment:
+    LIBPATH: "{{ sapctr_exe_dir }}"
+  failed_when: result_rid_sap_nr.rc >= 2
+  register: result_rid_sap_nr
+  when: sap_nr is defined
+    
+- name: Fail if SAP Service already stopped for sap_nr
+  fail:
+    msg: "Error: No running SAP Instances found"
+  failed_when: result_rid_sap_nr.stdout == ""
+  when:  sap_nr is defined
+
+- name: Set variable for running instances
+  set_fact:
+    running_sap_nr:  "{{ result_rid_sap_nr.stdout_lines }}"
+  when: sap_nr is defined
+ 
+#######################
+# sap_nr is undefined
+#######################
+- name: Check all running SAP instances
+  shell: "{{ sapctr_exe_dir }}/sapcontrol -nr {{ sap_sid_profile.stdout.split()[2] }} -function GetSystemInstanceList | grep -i gray | sort -k 5nr,"
+  environment:
+    LIBPATH: "{{ sapctr_exe_dir }}"
+  args:
+    chdir: "{{ sapctr_exe_dir }}"
+  register: result_rid
+  failed_when: result_rid.rc >= 2
+  when: sap_nr is undefined
+   
+- name: Fail if SAP Service already started
+  fail:
+    msg: "Error: No stopped SAP instances found"
+  failed_when: result_rid.stdout == ""
+  when:  sap_nr is undefined
+
+- name: Set variable for running instances
+  set_fact:
+    running_sap_nr:  "{{ result_rid.stdout_lines }}"
+  when:  sap_nr is undefined
+
+######################################################
+# Display SAP start commands
+######################################################
+- name: Display SAP start command with {{ running_sap_nr }}
+  debug:
+    msg: "SAP start command - {{ sapctr_exe_dir }}/sapcontrol -nr {{ sap_sid_profile.stdout.split()[2] }} -function InstanceStart {{ item.split()[0]|replace(',', '') }} {{ item.split()[1]|replace(',', '') }}"
+  with_items: "{{ running_sap_nr }}"
+  
+
+

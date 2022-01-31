@@ -1,5 +1,5 @@
 ---
-#   Copyright 2021 IBM Corporation
+#   Copyright 2022 IBM Corporation
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +14,6 @@
 #   limitations under the License.
 
 # defaults file for stop_sap
-sapctr_exe_dir: "/usr/sap/hostctrl/exe"
-sap_softtimeout: ""
-
+stopsap_dir_sapctrl_managednode: "/usr/sap/hostctrl/exe"
+stopsap_softtimeout: ""
+stopsap_input_waitforstopped: "1200"

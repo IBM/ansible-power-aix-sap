@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Role upgrade_sap_kernel &mdash; IBM ansible-power-aix-sap collection 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using AIX RBAC with Ansible" href="AIX_RBAC_for_Ansible.html" />
+    <link rel="prev" title="Role stop_sap" href="stop_sap.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> IBM ansible-power-aix-sap collection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation and configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_and_config.html">Installation and configuration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Available roles</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install_saphostagent.html">Role install_saphostagent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sap_opsyscheck.html">Role sap_opsyscheck</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start_db.html">Role start_db</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start_sap.html">Role start_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stop_sap.html">Role stop_sap</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Role upgrade_sap_kernel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#checking-prerequisites-for-sap-kernel-upgrade">Checking prerequisites for SAP kernel upgrade</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#variables">Variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#remarks">Remarks:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#defaults">Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-playbook">Example Playbook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#author-information">Author Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copyright">Copyright</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Role Based Access Control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="AIX_RBAC_for_Ansible.html">Using AIX RBAC with Ansible</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">IBM ansible-power-aix-sap collection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Role upgrade_sap_kernel</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/IBM/ansible-power-aix-sap/blob/main/docs/docsite/upgrade_sap_kernel.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="role-upgrade-sap-kernel">
+<span id="ibm-ansible-power-aix-sap-docsite-upgrade-sap-kernel"></span><h1><a class="toc-backref" href="#id16">Role upgrade_sap_kernel</a><a class="headerlink" href="#role-upgrade-sap-kernel" title="Permalink to this headline"></a></h1>
+<p>The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center (<a class="reference external" href="https://support.sap.com/swdc">SWDC</a>) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code>.</p>
+<p>The role upgrade_sap_kernel needs the SAP System ID as input in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sid</span></code>, <code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_adm</span></code> and <code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sys</span></code>.</p>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#role-upgrade-sap-kernel" id="id16">Role upgrade_sap_kernel</a></p>
+<ul>
+<li><p><a class="reference internal" href="#requirements" id="id17">Requirements</a></p></li>
+<li><p><a class="reference internal" href="#variables" id="id18">Variables</a></p></li>
+<li><p><a class="reference internal" href="#defaults" id="id19">Defaults</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id20">Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#example-playbook" id="id21">Example Playbook</a></p></li>
+<li><p><a class="reference internal" href="#license" id="id22">License</a></p></li>
+<li><p><a class="reference internal" href="#author-information" id="id23">Author Information</a></p></li>
+<li><p><a class="reference internal" href="#copyright" id="id24">Copyright</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="requirements">
+<h2><a class="toc-backref" href="#id17">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<p>This role is intended for the operating system IBM AIX. The target system must be enabled to execute Ansible playbooks. For details, see the prerequisites section in <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-prerequisites"><span class="std std-ref">Ansible Content for IBM Power Systems - AIX with SAP Software</span></a>.</p>
+<p>The role upgrade_sap_kernel will create a backup of directory <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upgrade_kernel</span></code> on the managed node into directory <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_kernel_backup_managednode</span></code> on the managed node.</p>
+<p>All provided SAR files will be extracted into directory on the managed node specified in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_extracted_sar_managednode</span></code>.</p>
+<p>The extracted files will be copied into directory on the managed node specified in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upgrade_kernel</span></code>.</p>
+<section id="checking-prerequisites-for-sap-kernel-upgrade">
+<h3>Checking prerequisites for SAP kernel upgrade<a class="headerlink" href="#checking-prerequisites-for-sap-kernel-upgrade" title="Permalink to this headline"></a></h3>
+<p>SAP has a number of requirements:</p>
+<ul class="simple">
+<li><p>Check if a system has enough free storage. Exceeding a certain treshold could lead to performance or other problems.</p></li>
+<li><p>Directory Structure for an ABAP System Based on SAP NetWeaver 7.5.</p></li>
+</ul>
+</section>
+</section>
+<section id="variables">
+<h2><a class="toc-backref" href="#id18">Variables</a><a class="headerlink" href="#variables" title="Permalink to this headline"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 53%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Usage</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sid</span></code></p></td>
+<td><p>SAP system ID</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_adm</span></code></p></td>
+<td><p>SAP admin ID</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id1">1</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sys</span></code></p></td>
+<td><p>SAP system group ID</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id2">1</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code></p></td>
+<td><p>Directory path on the Ansible host where SAR file is located.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id3">1</a> <a class="footnote-reference brackets" href="#id14" id="id4">2</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_controlnode</span></code></p></td>
+<td><p>Directory path on the Ansible host where SAPCAR file is located.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id5">1</a> <a class="footnote-reference brackets" href="#id15" id="id6">3</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_sapcar_default_managednode</span></code></p></td>
+<td><p>Fallback directory on the target host where SAPCAR is searched.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id7">1</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upload_managednode</span></code></p></td>
+<td><p>Temporary directory path that will be created on the target host.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id8">1</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_file_sapcar</span></code></p></td>
+<td><p>Local SAPCAR file name</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id9">1</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_extracted_sar_managednode</span></code></p></td>
+<td><p>Temporary directory path that will be created on the target host.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id10">1</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_kernel_backup_managednode</span></code></p></td>
+<td><p>Temporary directory path that will be created on the target host.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id11">1</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upgrade_kernel</span></code></p></td>
+<td><p>Directory path of SAP working directory.</p></td>
+<td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id12">1</a></p></td>
+</tr>
+</tbody>
+</table>
+<section id="remarks">
+<h3>Remarks:<a class="headerlink" href="#remarks" title="Permalink to this headline"></a></h3>
+<dl class="footnote brackets">
+<dt class="label" id="id13"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>,<a href="#id3">3</a>,<a href="#id5">4</a>,<a href="#id7">5</a>,<a href="#id8">6</a>,<a href="#id9">7</a>,<a href="#id10">8</a>,<a href="#id11">9</a>,<a href="#id12">10</a>)</span></dt>
+<dd><p>Default provided.</p>
+</dd>
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
+<dd><p>At least one sar file is required in <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code> matching the pattern “*.SAR” or “*.sar”.</p>
+</dd>
+<dt class="label" id="id15"><span class="brackets"><a class="fn-backref" href="#id6">3</a></span></dt>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_controlnode</span></code> is undefined, SAPCAR will be searched in <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code> and <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_sapcar_default_managednode</span></code>.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="defaults">
+<h2><a class="toc-backref" href="#id19">Defaults</a><a class="headerlink" href="#defaults" title="Permalink to this headline"></a></h2>
+<p>Suggested default values are provided in defaults/main.yml:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_adm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;{{</span> <span class="pre">upgsapkrn_input_sap_sid|lower</span> <span class="pre">}}adm&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sys</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;sapsys&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/tmp/sar_prov_dir&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_controlnode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/tmp/sapcar_prov_dir&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_sapcar_default_managednode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/usr/sap/hostctrl/exe&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upload_managednode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/usr/sap/tmp/sar_upload_dir&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_file_sapcar</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;SAPCAR&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_extracted_sar_managednode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/usr/sap/tmp/sar_extracted_dir&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_kernel_backup_managednode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/sapmnt/{{</span> <span class="pre">upgsapkrn_input_sap_sid</span> <span class="pre">}}/exe/uc/kernel_backup_dir&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upgrade_kernel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;/sapmnt/{{</span> <span class="pre">upgsapkrn_input_sap_sid</span> <span class="pre">}}/exe/uc/rs6000_64&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#id20">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
+<p>None.</p>
+</section>
+<section id="example-playbook">
+<h2><a class="toc-backref" href="#id21">Example Playbook</a><a class="headerlink" href="#example-playbook" title="Permalink to this headline"></a></h2>
+<p>You are running a SAP instance on LPARs defined by ibmaix_servers with SAP SID  (upgsapkrn_input_sap_sid) PRD.
+You plan to upgrade a SAP system kernel on these LPARs.</p>
+<p>ibmaix_servers has been defined in the inventory file as shown in the <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"><span class="std std-ref">configuration documentation</span></a>.</p>
+<p>You have created the following file upgrade_sap_kernel.yml</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibmaix_servers</span><span class="w"></span>
+<span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">upgsapkrn_input_sap_sid</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PRD&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ansible_dir&gt;/roles/upgrade_sap_kernel</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Run the Upgrade of SAP System PRD by:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose upgrade_sap_kernel.yml</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="license">
+<h2><a class="toc-backref" href="#id22">License</a><a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>
+<p>This collection is licensed under the <a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 license</a>.</p>
+</section>
+<section id="author-information">
+<h2><a class="toc-backref" href="#id23">Author Information</a><a class="headerlink" href="#author-information" title="Permalink to this headline"></a></h2>
+<p>SAP on IBM Power Development Team</p>
+</section>
+<section id="copyright">
+<h2><a class="toc-backref" href="#id24">Copyright</a><a class="headerlink" href="#copyright" title="Permalink to this headline"></a></h2>
+<p>Copyright IBM Corporation 2021,2022</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="stop_sap.html" class="btn btn-neutral float-left" title="Role stop_sap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="AIX_RBAC_for_Ansible.html" class="btn btn-neutral float-right" title="Using AIX RBAC with Ansible" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021,2022, IBM.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

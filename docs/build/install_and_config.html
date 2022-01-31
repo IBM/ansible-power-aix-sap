@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation and configuration &mdash; IBM ansible-power-aix-sap collection 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Role install_saphostagent" href="install_saphostagent.html" />
+    <link rel="prev" title="Ansible Content for IBM Power Systems - AIX with SAP Software" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> IBM ansible-power-aix-sap collection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation and configuration</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#author-information">Author Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copyright">Copyright</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Available roles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_saphostagent.html">Role install_saphostagent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sap_opsyscheck.html">Role sap_opsyscheck</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start_db.html">Role start_db</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start_sap.html">Role start_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stop_sap.html">Role stop_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upgrade_sap_kernel.html">Role upgrade_sap_kernel</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Role Based Access Control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="AIX_RBAC_for_Ansible.html">Using AIX RBAC with Ansible</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">IBM ansible-power-aix-sap collection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Installation and configuration</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/IBM/ansible-power-aix-sap/blob/main/docs/docsite/install_and_config.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation-and-configuration">
+<span id="ibm-ansible-power-aix-sap-docsite-install-and-config"></span><h1>Installation and configuration<a class="headerlink" href="#installation-and-configuration" title="Permalink to this headline"></a></h1>
+<p>Ansible is a tool to automate IT administration tasks. It comprises one <em>controlling node</em>, on which the Ansible collections are stored and executed, and one or multiple <em>managed nodes</em>, for which the administration tasks are performed. The general concept of Ansible assumes agent-less operations, i.e. the Ansible collections are only installed on the controlling node, but not on the managed nodes. Whenever updates are applied to the Ansible collections, they only need to be applied to the controlling node.</p>
+<p>Nevertheless, the usage of Ansible collections requires a one-time setup on both the controlling node and the managed nodes. All nodes need to be enabled to run Open Source packages and have Python 3 installed. Beginning with AIX 7.3, Python 3 is automatically pre-installed with the operating system. On the controlling node, also Ansible version 2.9 or higher must be installed.</p>
+<section id="prerequisites">
+<span id="ibm-ansible-power-aix-sap-docsite-install-and-config-prerequisites"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline"></a></h2>
+<p>To execute Ansible playbooks for SAP on IBM AIX, the following is required:</p>
+<p>Control node (if on AIX)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OS</span><span class="p">:</span> <span class="n">AIX</span> <span class="mf">7.1</span> <span class="n">TL5</span> <span class="ow">or</span> <span class="n">AIX</span> <span class="mf">7.2</span> <span class="n">TL4</span> <span class="ow">and</span> <span class="n">higher</span>
+<span class="n">Ansible</span> <span class="n">version</span><span class="p">:</span> <span class="mf">2.9</span> <span class="ow">or</span> <span class="n">later</span>
+<span class="n">Python</span><span class="p">:</span> <span class="mf">3.7</span> <span class="ow">or</span> <span class="n">later</span>
+<span class="n">AIX</span> <span class="n">OpenSSH</span>
+</pre></div>
+</div>
+<p>Managed node</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OS</span><span class="p">:</span> <span class="n">AIX</span> <span class="mf">7.1</span> <span class="n">TL5</span> <span class="ow">or</span> <span class="n">AIX</span> <span class="mf">7.2</span> <span class="n">TL4</span> <span class="ow">and</span> <span class="n">higher</span>
+<span class="n">Python</span> <span class="n">on</span> <span class="n">AIX</span><span class="p">:</span> <span class="mf">2.7</span> <span class="ow">or</span> <span class="n">later</span>
+<span class="n">AIX</span> <span class="n">OpenSSH</span>
+<span class="n">sudo</span>
+</pre></div>
+</div>
+<p>Remark: All the packages can be downloaded from: AIX Toolbox for Linux Applications (<a class="reference external" href="https://www.ibm.com/support/pages/aix-toolbox-linux-applications-downloads-alpha">https://www.ibm.com/support/pages/aix-toolbox-linux-applications-downloads-alpha</a>).</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Install Ansible:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum install ansible
+</pre></div>
+</div>
+</li>
+<li><p>Add /opt/freeware/bin to your environment (PATH variable).</p></li>
+<li><p>Install the Ansible roles that you want to use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ansible-galaxy install &lt;path to ansible role&gt;
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="configuration">
+<span id="ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"></span><h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>On the controlling node create an Ansible configuration file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat ~/.ansible.cfg
+
+<span class="c1">#remote_tmp     = ~/.ansible/tmp</span>
+<span class="c1">#local_tmp      = ~/.ansible/tmp</span>
+<span class="nv">inventory</span>       <span class="o">=</span> ~/.ansible/hosts
+<span class="nv">library</span>         <span class="o">=</span> ~/.ansible/modules
+<span class="nv">roles_path</span>      <span class="o">=</span> ~/.ansible/roles
+<span class="nv">ssh_args</span>        <span class="o">=</span> -i /home/johndoe/ssh/id_rsa
+<span class="nv">transfer_method</span> <span class="o">=</span> scp
+</pre></div>
+</div>
+</li>
+<li><p>On the controlling node create an inventory file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat ~/.ansible/hosts
+
+<span class="o">[</span>ibmaix_servers<span class="o">]</span>
+ibmaixserver01.mycorp.com
+ibmaixserver02.mycorp.com
+ibmaixserver03.mycorp.com
+
+<span class="o">[</span>ibmaix_servers:vars<span class="o">]</span>
+<span class="nv">ansible_python_interpreter</span><span class="o">=</span>/opt/freeware/bin/python
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline"></a></h2>
+<p>If you plan to use the AIX security concept RBAC (Role Bases Access Control) with Ansible, see: <a class="reference internal" href="AIX_RBAC_for_Ansible.html#ibm-ansible-power-aix-sap-docsite-aix-rbac-for-ansible"><span class="std std-ref">Using RBAC with Ansible</span></a>.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>
+<p>This collection is licensed under the <a class="reference external" href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 license</a>.</p>
+</section>
+<section id="author-information">
+<h2>Author Information<a class="headerlink" href="#author-information" title="Permalink to this headline"></a></h2>
+<p>SAP on IBM Power Development Team</p>
+</section>
+<section id="copyright">
+<h2>Copyright<a class="headerlink" href="#copyright" title="Permalink to this headline"></a></h2>
+<p>Copyright IBM Corporation 2021,2022</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Ansible Content for IBM Power Systems - AIX with SAP Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install_saphostagent.html" class="btn btn-neutral float-right" title="Role install_saphostagent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021,2022, IBM.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

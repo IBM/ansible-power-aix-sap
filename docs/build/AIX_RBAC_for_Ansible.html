@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Using AIX RBAC with Ansible &mdash; IBM ansible-power-aix-sap collection 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Role upgrade_sap_kernel" href="upgrade_sap_kernel.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> IBM ansible-power-aix-sap collection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation and configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_and_config.html">Installation and configuration</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Available roles</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install_saphostagent.html">Role install_saphostagent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sap_opsyscheck.html">Role sap_opsyscheck</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start_db.html">Role start_db</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start_sap.html">Role start_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stop_sap.html">Role stop_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upgrade_sap_kernel.html">Role upgrade_sap_kernel</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Role Based Access Control</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using AIX RBAC with Ansible</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-adding-a-local-user">Step 1 : adding a local user</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-create-rbac-configuration">Step 2 : create RBAC configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-adding-a-module-for-user-privilege-escalation-with-ansible-become">Step 3 : adding a module for user privilege escalation with Ansible “Become”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-4-configure-your-inventory">Step 4 : Configure your inventory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-and-debugging">Example and Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-configuration-and-hints">List configuration and hints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rbac-list-authorization">RBAC: list authorization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#listing-a-role-configuration">Listing a role configuration:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-the-privileged-command-database">List the privileged command database:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">IBM ansible-power-aix-sap collection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Using AIX RBAC with Ansible</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/IBM/ansible-power-aix-sap/blob/main/docs/docsite/AIX_RBAC_for_Ansible.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="using-aix-rbac-with-ansible">
+<span id="ibm-ansible-power-aix-sap-docsite-aix-rbac-for-ansible"></span><h1>Using AIX RBAC with Ansible<a class="headerlink" href="#using-aix-rbac-with-ansible" title="Permalink to this headline"></a></h1>
+<p>This Document describes how to use a non-root User for executing Ansible Task remote on a (target) host. RBAC principles are:</p>
+<ul class="simple">
+<li><p>Authorizations are assigned to commands</p></li>
+<li><p>Roles are assigned to users.</p></li>
+<li><p>Privileges are associated with specific processes.</p></li>
+<li><p>Explicit privileges are assigned to commands required for execution
+and their execution is governed by authorization.</p></li>
+</ul>
+<p>Goals: - no need to change Ansible playbooks or tasks - add only a few user configurations to your Ansible inventory to run tasks as non-root User.</p>
+<p>You need to do the following steps:</p>
+<ol class="arabic simple">
+<li><p>Adding a local user id on your AIX target host –&gt; in this example we use “ansusr1” as the user name. You can choose another one by your own.</p></li>
+<li><p>Adding a proper RBAC configuration to this local user.</p></li>
+<li><p>Adding a module for user privilege escalation with Ansible “Become”.</p></li>
+<li><p>Configure your inventory.</p></li>
+</ol>
+<section id="step-1-adding-a-local-user">
+<h2>Step 1 : adding a local user<a class="headerlink" href="#step-1-adding-a-local-user" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>Log-on into your AIX Target Host as Root/UID-0.</p></li>
+<li><p>Create a new user with:</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; mkuser ansusr1
+</pre></div>
+</div>
+</section>
+<section id="step-2-create-rbac-configuration">
+<h2>Step 2 : create RBAC configuration<a class="headerlink" href="#step-2-create-rbac-configuration" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>Configure as User Root/UID-0 a RBAC Role with the following commands:</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; mkauth <span class="nv">dfltmsg</span><span class="o">=</span><span class="s1">&#39;for ansible&#39;</span> ans_auth
+$&gt; setsecattr -c <span class="nv">innateprivs</span><span class="o">=</span>PV_SU_UID <span class="nv">accessauths</span><span class="o">=</span>ans_auth <span class="nv">ruid</span><span class="o">=</span><span class="m">0</span> <span class="nv">euid</span><span class="o">=</span><span class="m">0</span> /bin/sh
+$&gt; mkrole <span class="nv">authorizations</span><span class="o">=</span>ans_auth <span class="nv">dfltmsg</span><span class="o">=</span><span class="s2">&quot;Ansible role&quot;</span> ansible
+$&gt; chrole <span class="nv">auth_mode</span><span class="o">=</span>NONE ansible
+$&gt; chuser <span class="nv">roles</span><span class="o">=</span>ansible ansusr1
+$&gt; setkst
+</pre></div>
+</div>
+<p>Last Step “setkst” will reload the Kernel Tables used for the Role Based
+Access Control.</p>
+<ol class="arabic simple" start="2">
+<li><p>Make a test and logon as the test-user:</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; su - ansusr1
+$&gt; id --&gt; should show you a UID bigger <span class="k">then</span> <span class="m">0</span> ! --&gt; uid from ansusr1
+$&gt; swrole ansible -c /bin/sh
+$&gt; id --&gt; should show you running shell with UID <span class="m">0</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Configure ssh to remote login for “ansusr1”</p></li>
+</ol>
+</section>
+<section id="step-3-adding-a-module-for-user-privilege-escalation-with-ansible-become">
+<h2>Step 3 : adding a module for user privilege escalation with Ansible “Become”<a class="headerlink" href="#step-3-adding-a-module-for-user-privilege-escalation-with-ansible-become" title="Permalink to this headline"></a></h2>
+<p>Use the python Module from: <strong>https://github.com/power-devops/ansible-swrole</strong></p>
+<p>just copy swrole.py into the proper directory on your Ansible Host e.g. <strong>/opt/freeware/lib/python??/site-packages/ansible/plugins/become</strong> or where your Ansible is installed. You can search for the “plugins/become” directory on you Ansible Host. On an Ansible Linux server this could be located in: <strong>/usr/lib/python3.6/site-packages/ansible/plugins/become/swrole.py</strong>.</p>
+</section>
+<section id="step-4-configure-your-inventory">
+<h2>Step 4 : Configure your inventory<a class="headerlink" href="#step-4-configure-your-inventory" title="Permalink to this headline"></a></h2>
+<p>Here on example you could use in your YAML Inventory file named <strong>sapinventory.yaml</strong> The machine “host1234” is an AIX target host.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">host1234</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_local_tmp</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ansusr1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_become</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_become_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">swrole</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_become_role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ansible</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_python_interpreter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/usr/bin/python</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ansible_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">host1234.my.domain.com</span><span class="w"></span>
+</pre></div>
+</div>
+<p>If you need further information how on “Understanding privilege escalation: become” you may have a look here: <strong>https://docs.ansible.com/ansible/latest/user_guide/become.html</strong></p>
+</section>
+<section id="example-and-debugging">
+<h2>Example and Debugging<a class="headerlink" href="#example-and-debugging" title="Permalink to this headline"></a></h2>
+<p>An example call could look like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; ansible-playbook -i sapinventory.yaml start.yaml
+</pre></div>
+</div>
+<p>If you run into errors open a “typescript” file, add the Ansible debug variable in front of the playbook call like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">ANSIBLE_DEBUG</span><span class="o">=</span><span class="m">1</span> ansible-playbook ...
+</pre></div>
+</div>
+<p>and close the log file after this run. You may review the log now to detect the root cause of the error. There are also other options to save output like using Ansible-Tower or configure log-options in your configuration/settings file.</p>
+</section>
+<section id="list-configuration-and-hints">
+<h2>List configuration and hints<a class="headerlink" href="#list-configuration-and-hints" title="Permalink to this headline"></a></h2>
+<section id="rbac-list-authorization">
+<h3>RBAC: list authorization<a class="headerlink" href="#rbac-list-authorization" title="Permalink to this headline"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; lsauth ALL<span class="p">|</span>grep -i ans
+ans_auth <span class="nv">id</span><span class="o">=</span><span class="m">10019</span> <span class="nv">dfltmsg</span><span class="o">=</span><span class="k">for</span> ansible
+</pre></div>
+</div>
+<p>If you know the name of the authorization then replace “ALL” with this. You can also have a look to the authorization configuration file:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; cat /etc/security/authorizations
+</pre></div>
+</div>
+<p>or in a similar format output with:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; lsauth -f ALL
+</pre></div>
+</div>
+</section>
+<section id="listing-a-role-configuration">
+<h3>Listing a role configuration:<a class="headerlink" href="#listing-a-role-configuration" title="Permalink to this headline"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; lsrole ansible
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; lsrole ALL<span class="p">|</span>grep -i ans
+</pre></div>
+</div>
+</section>
+<section id="list-the-privileged-command-database">
+<h3>List the privileged command database:<a class="headerlink" href="#list-the-privileged-command-database" title="Permalink to this headline"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$&gt; cat /etc/security/privcmds
+</pre></div>
+</div>
+<p>For further details see: <a class="reference external" href="https://www.ibm.com/docs/en/aix/7.2?topic=database-adding-command-privileged-command">https://www.ibm.com/docs/en/aix/7.2?topic=database-adding-command-privileged-command</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="upgrade_sap_kernel.html" class="btn btn-neutral float-left" title="Role upgrade_sap_kernel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021,2022, IBM.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

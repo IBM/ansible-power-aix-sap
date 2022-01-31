@@ -1,5 +1,5 @@
 ---
-#   Copyright 2021 IBM Corporation
+#   Copyright 2022 IBM Corporation
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,36 +16,47 @@
 # defaults for upgrade_sap_kernel
 
 # set variable: sapadm
-sap_adm: "{{ sap_sid|lower }}adm"
+upgsapkrn_input_sap_adm: "{{ upgsapkrn_input_sap_sid|lower }}adm"
 
 # set variable: sapsys
-sap_sys: "sapsys"
-
-# Directory path on the Ansible host where SAR file is located
-sap_kernel_upgrade_download_local_path: "/tmp/sar_prov_dir"
-
-# Directory path on the Ansible host where SAPCAR is located
-sap_sapcar_download_local_path: "/tmp/sapcar_prov_dir"
-
-# Directory path on the Ansible host where SAR file is located
-sap_sapcar_local_path_default: "/usr/sap/hostctrl/exe"
-
-# Temporary directory path that will be created on the target host
-sap_kernel_upgrade_dest_dir: "/usr/sap/tmp/kernel_temp_dir"
-
-# Local SAPCAR file name
-sap_sapcar_file_name: "SAPCAR"
-    
-# Temporary dirctory path that will be created on the target host
-sap_kernel_upgrade_tmp_dir: "/sapmnt/{{ sap_sid }}/exe/uc/kernel_interims_dir"
-
-# Directory path of SAP working directory
-sap_kernel_upgrade_dir: "/sapmnt/{{ sap_sid }}/exe/uc/kernel_working_dir"
+upgsapkrn_input_sap_sys: "sapsys"
 
 
+#############################################################
+# Directories to search for SAR files on the control node
+#############################################################
+# Directory path on the control node where SAR file is located
+upgsapkrn_dir_download_sar_controlnode: "/tmp/sar_prov_dir"
 
 
+####################################################################
+# Directories to search for SAPCAR on the control and managed node
+####################################################################
+# SAPCAR file name
+upgsapkrn_file_sapcar: "SAPCAR"
+
+# Directory path on the control node where SAPCAR is located
+upgsapkrn_dir_download_sapcar_controlnode: "/tmp/sapcar_prov_dir"
+
+# Directory path on the managed node where SAPCAR is located
+upgsapkrn_dir_sapcar_default_managednode: "/usr/sap/hostctrl/exe"
 
 
+#############################################
+# Directories to be created on managed node
+#############################################
+# Directory path for uploading files to be created on the managed node
+upgsapkrn_dir_upload_managednode: "/usr/sap/tmp/sar_upload_dir"
+
+# Directory path for extracted sar file to be created on the managed node
+upgsapkrn_dir_extracted_sar_managednode: "/usr/sap/tmp/sar_extracted_dir"
+
+# Directory path for backup dir to be created on the managed node
+upgsapkrn_dir_kernel_backup_managednode: "/sapmnt/{{ upgsapkrn_input_sap_sid }}/exe/uc/kernel_backup_dir"
 
 
+#############################################
+# Directory SAP kernel
+#############################################
+# Directory path of SAP kernel exe directory on managed node
+upgsapkrn_dir_upgrade_kernel: "/sapmnt/{{ upgsapkrn_input_sap_sid }}/exe/uc/rs6000_64"

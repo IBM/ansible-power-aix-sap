@@ -1,0 +1,31 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+##########################################################################
+# tasks file for sap_opsyscheck_dir_mounted_managed_node free space check
+############################################################################
+
+- name: Set variable for checking
+  set_fact:
+    sap_opsyscheck_dir_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto',sap_opsyscheck_dir_mount_managed_node) | list | first }}"
+
+- name: Check free space in GB on {{ sap_opsyscheck_dir_mount_managed_node }}
+  debug:
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_dir_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on {{ sap_opsyscheck_dir_mount_managed_node }}"
+    
+- name: Check {{ sap_opsyscheck_dir_mount_managed_node }} for 5 GB free space
+  assert:
+    that: sap_opsyscheck_dir_mounted_managed_node.size_available/1024/1024/1024 > 5
+    msg: "Error: On {{ sap_opsyscheck_dir_mount_managed_node }} no 5 GB free space is available. For a SAP kernel upgrade 5 GB free space are recommended."

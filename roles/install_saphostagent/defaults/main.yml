@@ -1,5 +1,5 @@
 ---
-#   Copyright 2021 IBM Corporation
+#   Copyright 2022 IBM Corporation
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,22 +16,19 @@
 # defaults variables file for install_saphostagent
 
 # Temporary directory path, that will be created on the target host
-sap_hostagent_agent_tmp_directory: "/tmp/hostctrl"
+insshagnt_dir_temp_managednode: "/tmp/hostctrl"
 
 # Directory path on the Ansible host where SAR file is located
-sap_hostagent_download_local_path: "/tmp/downloads"
+insshagnt_dir_download_controlnode: "/tmp/downloads"
 
 # Directory path on the Ansible host where SAPCAR is located
-sap_sapcar_download_local_path: "/tmp/sapcar"
+insshagnt_dir_download_sapcar_controlnode: "/tmp/sapcar"
 
 # Directory on the target host where SAPCAR is searched by default
-sap_sapcar_local_path_default: "/usr/sap/hostctrl/exe"
+insshagnt_dir_sapcar_default_managednode: "/usr/sap/hostctrl/exe"
 
 # Default SAPCAR file name
-sap_hostagent_sapcar_file_name: "SAPCAR"
+insshagnt_file_sapcar: "SAPCAR"
 
 # Boolean variable to indicate if the temporary directory on the target host will be removed or not after the installation
-sap_hostagent_clean_tmp_directory: True
-
-
-
+insshagnt_bool_clean_dir_temp_managednode: True

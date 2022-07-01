@@ -44,7 +44,9 @@
 <p class="caption" role="heading"><span class="caption-text">Available roles</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install_saphostagent.html">Role install_saphostagent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sap_install_app_server.html">Role sap_install_app_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sap_opsyscheck.html">Role sap_opsyscheck</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save_dir.html">Role save_dir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="start_db.html">Role start_db</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Role start_sap</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
@@ -63,6 +65,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stop_sap.html">Role stop_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upgrade_sap_HANA_client.html">Role upgrade_sap_HANA_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="upgrade_sap_kernel.html">Role upgrade_sap_kernel</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Role Based Access Control</span></p>
@@ -96,9 +99,9 @@
              
   <section id="role-start-sap">
 <span id="ibm-ansible-power-aix-sap-docsite-start-sap"></span><h1><a class="toc-backref" href="#id8">Role start_sap</a><a class="headerlink" href="#role-start-sap" title="Permalink to this headline"></a></h1>
-<p>The role start_sap is used to start one or multiple SAP instances, either for a given SAP system ID (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instance</span></code>) or for all SAP systems that are configured in file /usr/sap/sapservices (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_all_instances</span></code>). If a requested SAP instance is already active, the request will be ignored and no error message will be sent. The role start_sap is using the sapcontrol command of the SAP Host Agent as suggested in <a class="reference external" href="https://launchpad.support.sap.com/#/notes/1763593">SAP Note 1763593</a>. It requires that the SAP start services for the selected instances are active. By default, the SAP start services are started automatically after a system restart. If the SAP start services are not active, they can be started by using this role with the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code>.</p>
-<p>If the role start_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instance</span></code>, it needs the SAP system ID as input in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code>. An SAP instance number can be provided optionally in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_instance_nr</span></code>. If an instance number is provided, only this instance is started. If no instance number is provided, start_sap will start all configured instances for the given SID, also on remote servers in a distributed landscape. It is recommended that the role start_sap is executed on the logical partition or server that hosts the central services instance (ASCS, SCS), the primary application server instance, or the central instance.</p>
-<p>If the role start_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_all_instances</span></code>, the values in the variables <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code> and <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_instance_nr</span></code> are ignored. Instead, all SAP systems that are configured in file /usr/sap/sapservices will be started with all their instances.</p>
+<p>The role start_sap is used to start one or multiple SAP instances, either for a given SAP system ID (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instances</span></code>) or for all SAP systems that are configured in file /usr/sap/sapservices (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_all_systems</span></code>). If a requested SAP instance is already active, the request will be ignored and no error message will be sent. The role start_sap is using the sapcontrol command of the SAP Host Agent as suggested in <a class="reference external" href="https://launchpad.support.sap.com/#/notes/1763593">SAP Note 1763593</a>. It requires that the SAP start services for the selected instances are active. By default, the SAP start services are started automatically after a system restart. If the SAP start services are not active, they can be started by using this role with the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code>.</p>
+<p>If the role start_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instances</span></code>, it needs the SAP system ID as input in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code>. An SAP instance number can be provided optionally in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_instance_nr</span></code>. If an instance number is provided, only this instance is started. If no instance number is provided, start_sap will start all configured instances for the given SID, also on remote servers in a distributed landscape. It is recommended that the role start_sap is executed on the logical partition or server that hosts the central services instance (ASCS, SCS), the primary application server instance, or the central instance.</p>
+<p>If the role start_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_all_systems</span></code>, the values in the variables <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code> and <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_instance_nr</span></code> are ignored. Instead, all SAP systems that are configured in file /usr/sap/sapservices will be started with all their instances.</p>
 <p>If the role start_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code>, you can specify a SAP system ID in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code> or the special value <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>. If you specify <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>, SAP start services will be started for all SAP systems that are configured in /usr/sap/sapservices.</p>
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title">Table of contents</p>
@@ -125,7 +128,7 @@
 </section>
 <section id="tags">
 <h2><a class="toc-backref" href="#id10">Tags</a><a class="headerlink" href="#tags" title="Permalink to this headline"></a></h2>
-<p>Specify one of the following tags to specify what parts of an SAP system you want to start. If you do not specify a tag, <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instance</span></code> will be assumed as default. If you misspell the tag, no steps in the role will be executed.</p>
+<p>Specify one of the following tags to specify what parts of an SAP system you want to start. If you do not specify a tag, <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instances</span></code> will be assumed as default. If you misspell the tag, an error message will be sent.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 24%" />
@@ -137,12 +140,12 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_start_instance</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_start_instances</span></code></p></td>
 <td><p>One or all instances for a specific SAP system ID are started. The SAP system ID must be
 specified in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code>, the instance number can optionally be
 specified in variable <code class="docutils literal notranslate"><span class="pre">startsap_input_sap_instance_nr</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sap_start_all_instances</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sap_start_all_systems</span></code></p></td>
 <td><p>All instances are started for all SAP systems that are configured in file /usr/sap/sapservices.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_start_services</span></code></p></td>
@@ -193,10 +196,10 @@ or for all SAP systems that are configured in file /usr/sap/sapservices when var
 <dd><p>Default provided.</p>
 </dd>
 <dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>The variable is only evaluated when the tags <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instance</span></code> or <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code> are set.</p>
+<dd><p>The variable is only evaluated when the tags <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instances</span></code> or <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code> are set.</p>
 </dd>
 <dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>The variable is only evaluated when the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instance</span></code> is set. If the variable is omitted, all instances of the specified SAP system ID will be started.</p>
+<dd><p>The variable is only evaluated when the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_instances</span></code> is set. If the variable is omitted, all instances of the specified SAP system ID will be started.</p>
 </dd>
 </dl>
 </section>
@@ -230,20 +233,23 @@ or for all SAP systems that are configured in file /usr/sap/sapservices when var
 </section>
 <section id="example-playbook">
 <h2><a class="toc-backref" href="#id14">Example Playbook</a><a class="headerlink" href="#example-playbook" title="Permalink to this headline"></a></h2>
-<p>You plan to start a SAP system with SAP SID (<code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code>) PRD having at least one instance on LPAR ibmaixserver01.mycorp.com</p>
+<p>You plan to start a SAP system with SAP SID (<code class="docutils literal notranslate"><span class="pre">startsap_input_sap_sid</span></code>) PRD and instance number  (<code class="docutils literal notranslate"><span class="pre">``startsap_input_sap_instance_nr``</span></code>) 3 on LPAR ibmaixserver01.mycorp.com</p>
 <p>ibmaixserver01.mycorp.com has been defined in the inventory file as shown in the <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"><span class="std std-ref">configuration documentation</span></a>.</p>
 <p>You have created the following file start_sap.yml</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibmaix_servers</span><span class="w"></span>
 <span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">startsap_input_sap_sid</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PRD&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">startsap_input_sap_instance_nr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
 <span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ansible_dir&gt;/roles/start_sap</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Run the Start of SAP System PRD by:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose start_sap.yml  -t sap_start_instance</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose start_sap.yml  -t sap_start_instances</span><span class="w"></span>
 </pre></div>
 </div>
+<p><strong>Remark</strong></p>
+<p>The current version does not accept SAP instance numbers with a leading ‘0’. So, ‘3’ is valid but ‘03’ is not.</p>
 </section>
 <section id="license">
 <h2><a class="toc-backref" href="#id15">License</a><a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>

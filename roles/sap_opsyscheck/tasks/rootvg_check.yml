@@ -1,0 +1,43 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+##########################################################################
+# tasks file for ntp daemon check
+############################################################################
+
+- name: Check rootvg
+  shell: lsps -a | grep 'rootvg'
+  register: sapopsyschk_rootvg_check_output
+
+- name: Display error
+  fail:
+    msg: "ERROR: No rootvg found"
+  when: sapopsyschk_rootvg_check_output.stdout == ""
+
+- name: Check rootvg size
+  shell: lsps -a | grep 'rootvg' | awk '{ print $4; }'
+  register: sapopsyschk_rootvg_size_output
+
+- name: Display warning
+  debug:
+    msg: "WARNING: Size of rootvg only is {{ sapopsyschk_rootvg_size_output.stdout }}"
+  when:  sapopsyschk_rootvg_size_output.stdout|replace('MB', '')|int < 10240
+
+- name: Display OK
+  debug:
+    msg: "OK: rootvg size is {{ sapopsyschk_rootvg_size_output.stdout }}"
+  when:  sapopsyschk_rootvg_size_output.stdout|replace('MB', '')|int > 10240
+
+

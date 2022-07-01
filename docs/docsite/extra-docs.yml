@@ -5,9 +5,13 @@ sections:
       - index
       - install_and_config
       - install_saphostagent
+      - sap_install_app_server
       - sap_opsyscheck
+      - save_dir
       - start_db
       - start_sap
+      - stop_db
       - stop_sap
+      - upgrade_sap_HANA_client
       - upgrade_sap_kernel
       - AIX_RBAC_for_Ansible

@@ -1,0 +1,101 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+###########################################
+# tasks file for sap_stop_hana
+###########################################
+
+###########################################
+# PreCheck database ID
+###########################################
+- name: Check if stopdb_input_db_sid variable provided
+  fail:
+    msg: "Error: Input parameter stopdb_input_db_sid is required."
+  when: (stopdb_input_db_sid is not defined) or (stopdb_input_db_sid is none)
+
+- name: Check if stopdb_input_hdb_instance_number provided
+  fail:
+    msg: "Error: Input parameter stopdb_input_hdb_instance_number is required."
+  when: (stopdb_input_hdb_instance_number is not defined) or (stopdb_input_hdb_instance_number is none)
+
+- name: HANA DB will be stopped.
+  debug:
+    msg: "HANA DB instance HDB{{stopdb_input_hdb_instance_number}} will be stopped"
+
+######################################################
+# Validate user {{stopdb_input_db_sid|lower}}adm
+######################################################
+- name: Validate user {{stopdb_input_db_sid|lower}}adm
+  shell: "id {{stopdb_input_db_sid|lower}}adm | grep -v grep | cat"
+  register: stopdb_output_selected_active_hana
+
+- name: Error if {{stopdb_input_db_sid|lower}}adm does not exist
+  fail:
+    msg: "Error: User: {{stopdb_input_db_sid|lower}}adm does not exist."
+  when: stopdb_output_selected_active_hana.stdout_lines|length == 0
+######################################################
+# Validate stopdb_input_db_sid on target system
+######################################################
+- name: Validate stopdb_input_db_sid
+  become_user: "{{stopdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "ls /usr/sap/{{stopdb_input_db_sid}} | grep -v grep | cat"
+  register: stopdb_output_selected_active_hana
+
+- name: Error if stopdb_input_db_sid is invalid
+  fail:
+    msg: "Error: Provided DBSID: {{stopdb_input_db_sid}} is invalid. /usr/sap/{{stopdb_input_db_sid}} does not exist."
+  when: stopdb_output_selected_active_hana.stdout_lines|length == 0
+
+######################################################
+# Validate stopdb_input_hdb_instance_number  on target system
+######################################################
+- name: Validate stopdb_input_hdb_instance_number
+  become_user: "{{stopdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "ls /usr/sap/{{stopdb_input_db_sid}}//HDB{{stopdb_input_hdb_instance_number}}/HDB | grep -v grep | cat"
+  register: stopdb_output_selected_active_hana
+
+- name: Error if stopdb_input_hdb_instance_number is invalid
+  fail:
+    msg: "Error: Provided Instance Number: {{stopdb_input_hdb_instance_number}} is invalid. /usr/sap/{{stopdb_input_db_sid}}//HDB{{stopdb_input_hdb_instance_number}}/HDB does not exist"
+  when: stopdb_output_selected_active_hana.stdout_lines|length == 0
+
+
+######################################################
+# Check for running HANA instance
+######################################################
+- name: Check status of HANA instance
+  become_user: "{{stopdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "/usr/sap/{{stopdb_input_db_sid}}/HDB{{stopdb_input_hdb_instance_number}}/HDB info| grep  hdbindexserver | grep -v grep | cat  "
+  register: stopdb_output_selected_active_hana
+
+- name: Info if HANA instance is already running
+  debug:
+    msg: "Info: HANA DB instance HDB{{stopdb_input_hdb_instance_number}} is already stopped"
+  when: stopdb_output_selected_active_hana.stdout_lines|length == 0
+
+- meta: end_play
+  when: stopdb_output_selected_active_hana.stdout_lines|length == 0
+
+######################################################
+# Stop HANA instance
+######################################################
+- name: Stop HANA instance
+  become_user: "{{stopdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "/usr/sap/{{stopdb_input_db_sid}}/HDB{{stopdb_input_hdb_instance_number}}/HDB stop"
+

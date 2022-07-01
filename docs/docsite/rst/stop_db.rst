@@ -3,31 +3,49 @@
 Role stop_db
 ============
 
-The role stop_db is used to stop a database instance. Currently supported DBs are Db2 LUW. The role is used to stop a Db2 instance for a given Database System ID (DBSID). If a requested database is already stopped, the request will be ignored and an info message will be sent. Before calling this role, all SAP instances belonging to this SAP system should be down.
-
-The role stop_db requires 1 variable as input (see section Variables).
+The role stop_db is used to stop a database instance. Currently supported databases are IBM Db2 for Linux, Unix and Windows (LUW), Oracle and SAP HANA. When using this role, you must specify the database system id in a variable and select the database type through a tag. If the requested database is not active, the request will be ignored and an informational message will be sent. A description of the tags and variables can be found in the related sections of this document.
 
 .. contents:: Table of contents
    :depth: 2
-   
+
 Requirements
 ------------
 
 This role is intended for the operating system IBM AIX. The target system must be enabled to execute Ansible playbooks. For details, see the prerequisites section in :ref:`Ansible Content for IBM Power Systems - AIX with SAP Software <IBM.ansible-power-aix-sap.docsite.install_and_config.prerequisites>`.
 
+The requested database instance must be installed on the managed node and operational.
+
+Tags
+----
+
+Specify one of the following tags to specify the database type to be stopped. If you do not specify a tag, an error message will be sent.
+
++--------------+------------------------+--------------------------------------------------------------------------+
+| DB type      | Tag                    | Description                                                              |
++==============+========================+==========================================================================+
+| IBM Db2 LUW  | ``sap_stop_db2``       | Stop a database instance of type IBM Db2 LUW                             |
++--------------+------------------------+--------------------------------------------------------------------------+
+| SAP HANA     | ``sap_stop_hana``      | Stop a database instance of type SAP HANA                                |
++--------------+------------------------+--------------------------------------------------------------------------+
+| Oracle       | ``sap_stop_oracle``    | Stop a database instance of type Oracle                                  |
++--------------+------------------------+--------------------------------------------------------------------------+
+
 Variables
 ---------
 
-+--------------------------------+------------------------------------------------------------------------------+----------+
-| Variable                       | Usage                                                                        | Required |
-+================================+==============================================================================+==========+
-| ``stopdb_input_db_sid``        | DB system ID                                                                 | Yes      |
-+--------------------------------+------------------------------------------------------------------------------+----------+
-
-Remarks:
-^^^^^^^^
-
-None
++-------------+---------------------------------------+------------------------------------------------------------------------------+----------+
+| DB Type     |Variable                               | Usage                                                                        | Required |
++=============+=======================================+==============================================================================+==========+
+| IBM Db2 LUW | ``stopdb_input_db_sid``               | DB system ID                                                                 | Yes      |
++-------------+---------------------------------------+------------------------------------------------------------------------------+----------+
+| SAP HANA    | ``stopdb_input_db_sid``               | DB system ID                                                                 | Yes      |
++             +---------------------------------------+------------------------------------------------------------------------------+----------+
+|             | ``stopdb_input_hdb_instance_number``  | Instance number of SAP HANA DB                                               | Yes      |
++-------------+---------------------------------------+------------------------------------------------------------------------------+----------+
+| Oracle      | ``stopdb_input_db_sid``               | DB system ID                                                                 | Yes      |
++             +---------------------------------------+------------------------------------------------------------------------------+----------+
+|             | ``stopdb_input_sap_sid``              | SAP system ID                                                                | Yes      |
++-------------+---------------------------------------+------------------------------------------------------------------------------+----------+
 
 Defaults
 --------
@@ -42,22 +60,23 @@ None.
 Example Playbook
 ----------------
 
-The example playbook is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named stop_db.yml and has the following contents:
+The example playbook is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named stop_hana_db.yml and has the following contents:
 
 .. code:: yaml
 
        - hosts: ibmaix_servers
          vars:
          - stopdb_input_db_sid: "PRD"
+         - stopdb_input_hdb_instance_number: 00
          roles:
          - role: <ansible_dir>/roles/stop_db
-         
- 
+
 To execute this playbook, enter the command:
 
 .. code:: YAML
 
-   ansible-playbook --verbose stop_db.yml
+   ansible-playbook --verbose -t sap_stop_hana stop_hana_db.yml
+
 
 License
 -------
@@ -72,4 +91,5 @@ SAP on IBM Power Development Team
 Copyright
 ---------
 
-Copyright IBM Corporation 2021,2022
+Copyright IBM Corporation 2022
+

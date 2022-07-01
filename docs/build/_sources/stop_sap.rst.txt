@@ -3,11 +3,11 @@
 Role stop_sap
 =============
 
-The role stop_sap is used to stop one or multiple SAP instances, either for a given SAP system ID (tag ``-t sap_stop_instance``) or for all SAP systems that are configured in file /usr/sap/sapservices (tag ``-t sap_stop_all_instances``). If a requested SAP instance is already inactive, the request will be ignored and no error message will be sent. The role stop_sap is using the sapcontrol command of the SAP Host Agent as suggested in `SAP Note 1763593 <https://launchpad.support.sap.com/#/notes/1763593>`_. It requires that the SAP start services for the selected instances are active. By default, the SAP start services are started automatically after a system restart. If the SAP start services are not active, they can be started by using this role with the tag ``-t sap_start_services``.
+The role stop_sap is used to stop one or multiple SAP instances, either for a given SAP system ID (tag ``-t sap_stop_instances``) or for all SAP systems that are configured in file /usr/sap/sapservices (tag ``-t sap_stop_all_systems``). If a requested SAP instance is already inactive, the request will be ignored and no error message will be sent. The role stop_sap is using the sapcontrol command of the SAP Host Agent as suggested in `SAP Note 1763593 <https://launchpad.support.sap.com/#/notes/1763593>`_. It requires that the SAP start services for the selected instances are active. By default, the SAP start services are started automatically after a system restart. If the SAP start services are not active, they can be started by using this role with the tag ``-t sap_start_services``.
 
-If the role stop_sap is used with tag ``-t sap_stop_instance``, it needs the SAP system ID as input in variable ``stopsap_input_sap_sid``. An SAP instance number can be provided optionally in variable ``stopsap_input_sap_instance_nr``. If an instance number is provided, only this instance is stopped. If no instance number is provided, stop_sap will stop all configured instances for the given SID, also on remote servers in a distributed landscape. It is recommended that the role stop_sap is executed on the logical partition or server that hosts the central services instance (ASCS, SCS), the primary application server instance, or the central instance.
+If the role stop_sap is used with tag ``-t sap_stop_instances``, it needs the SAP system ID as input in variable ``stopsap_input_sap_sid``. An SAP instance number can be provided optionally in variable ``stopsap_input_sap_instance_nr``. If an instance number is provided, only this instance is stopped. If no instance number is provided, stop_sap will stop all configured instances for the given SID, also on remote servers in a distributed landscape. It is recommended that the role stop_sap is executed on the logical partition or server that hosts the central services instance (ASCS, SCS), the primary application server instance, or the central instance.
 
-If the role stop_sap is used with tag ``-t sap_stop_all_instances``, the values in the variables ``stopsap_input_sap_sid`` and ``stopsap_input_sap_instance_nr`` are ignored. Instead, all SAP systems that are configured in file /usr/sap/sapservices will be stopped with all their instances.
+If the role stop_sap is used with tag ``-t sap_stop_all_systems``, the values in the variables ``stopsap_input_sap_sid`` and ``stopsap_input_sap_instance_nr`` are ignored. Instead, all SAP systems that are configured in file /usr/sap/sapservices will be stopped with all their instances.
 
 If the role stop_sap is used with tag ``-t sap_stop_services``, you can specify a SAP system ID in variable ``stopsap_input_sap_sid`` or the special value ``"*"``. If you specify ``"*"``, SAP start services will be stopped for all SAP systems that are configured in /usr/sap/sapservices.
 
@@ -24,16 +24,16 @@ The SAP Start Services for the requested SAP system must be configured in file /
 Tags
 ----
 
-Specify one of the following tags to specify what parts of an SAP system you want to stop. If you do not specify a tag, ``-t sap_stop_instance`` will be assumed as default. If you misspell the tag, no steps in the role will be executed.
+Specify one of the following tags to specify what parts of an SAP system you want to stop. If you do not specify a tag, ``-t sap_stop_instances`` will be assumed as default. If you misspell the tag, an error message will be sent.
 
 +-------------------------------+-------------------------------------------------------------------------------------------------+
 | Tag                           | Usage                                                                                           |
 +===============================+=================================================================================================+
-| ``sap_stop_instance``         | One or all instances for a specific SAP system ID are stopped. The SAP system ID must be        |
+| ``sap_stop_instances``        | One or all instances for a specific SAP system ID are stopped. The SAP system ID must be        |
 |                               | specified in variable ``stopsap_input_sap_sid``, the instance number can optionally be          |
 |                               | specified in variable ``stopsap_input_sap_instance_nr``.                                        |
 +-------------------------------+-------------------------------------------------------------------------------------------------+
-| ``sap_stop_all_instances``    | All instances are stopped for all SAP systems that are configured in file /usr/sap/sapservices. |
+| ``sap_stop_all_systems``      | All instances are stopped for all SAP systems that are configured in file /usr/sap/sapservices. |
 +-------------------------------+-------------------------------------------------------------------------------------------------+
 | ``sap_stop_services``         | Stop SAP start services for the SAP system ID specified in variable ``stopsap_input_sap_sid``   |
 |                               | or for all SAP systems that are configured in file /usr/sap/sapservices when variable           |
@@ -61,8 +61,8 @@ Remarks:
 ^^^^^^^^
 
 .. [1] Default provided.
-.. [2] The variable is only evaluated when the tags ``-t sap_stop_instance`` or ``-t sap_stop_services`` are set.
-.. [3] The variable is only evaluated when the tag ``-t sap_stop_instance`` is set. If the variable is omitted, all instances of the specified SAP system ID will be stopped.
+.. [2] The variable is only evaluated when the tags ``-t sap_stop_instances`` or ``-t sap_stop_services`` are set.
+.. [3] The variable is only evaluated when the tag ``-t sap_stop_instances`` is set. If the variable is omitted, all instances of the specified SAP system ID will be stopped.
 .. [4] When the parameter is omitted, a hard shutdown is executed.
 
 Defaults
@@ -88,7 +88,7 @@ None.
 Example Playbook
 ----------------
 
-You plan to stop a SAP system with SAP SID (``stopsap_input_sap_sid``) PRD having at least one instance on LPAR ibmaixserver01.mycorp.com
+You plan to stop a SAP system with SAP SID (``stopsap_input_sap_sid``) PRD with instance number (``stopsap_input_sap_instance_nr``) 3 on LPAR ibmaixserver01.mycorp.com
 
 ibmaixserver01.mycorp.com has been defined in the inventory file as shown in the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>`.
 
@@ -99,6 +99,7 @@ You have created the following file stop_sap.yml
        - hosts: ibmaix_servers
          vars:
          - stopsap_input_sap_sid: "PRD"
+         - stopsap_input_sap_instance_nr: 3
          roles:
          - role: <ansible_dir>/roles/stop_sap
 
@@ -106,7 +107,11 @@ Run the Stop of SAP System PRD by:
 
 .. code:: yaml
 
-   ansible-playbook --verbose stop_sap.yml -t sap_stop_instance
+   ansible-playbook --verbose stop_sap.yml -t sap_stop_instances
+   
+**Remark**
+
+The current version does not accept SAP instance numbers with a leading '0'. So, '3' is valid but '03' is not.
 
 License
 -------

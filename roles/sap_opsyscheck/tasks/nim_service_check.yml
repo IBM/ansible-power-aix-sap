@@ -25,6 +25,6 @@
 
 - name: Warning if nim service is running
   debug:
-    msg: "Warning: The nim service handler is running. It's recommended to stop the nim service."
+    msg: "WARNING: The nim service handler is running. It's recommended to stop the nim service."
   when: sap_nim_service_check_output.stdout != ""
 

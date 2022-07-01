@@ -37,7 +37,7 @@
 # Check SAP SID
 ###########################################
 - name: Search profile name for {{ stopsap_input_sap_sid }} in /usr/sap/sapservices
-  shell:  "grep {{ stopsap_input_sap_sid }} /usr/sap/sapservices | grep -v '^ *#'"
+  shell:  "grep {{ stopsap_input_sap_sid }} /usr/sap/sapservices | grep -v '^ *#' | head -1"
   register: stopsap_list_sap_services
   ignore_errors: True
   no_log: True
@@ -50,9 +50,22 @@
 ###########################################
 # Get if there is any running service
 ###########################################
-- name: Set variable for SAP service profile
+#- name: Set variable for SAP service profile
+#  set_fact:
+#    stopsap_list_sap_services:  "{{ stopsap_list_sap_services.stdout_lines[0].split()[4] }}"
+
+
+
+- name: Search profile name for all sap instances in /usr/sap/sapservices
+  shell:  "grep sapstartsrv /usr/sap/sapservices | grep {{ stopsap_input_sap_sid }} | grep -v '^ *#' |  awk -F 'pf=' '{ print $2;}' | cut -f1 -d' ' | head -1"
+  register: stopsap_list_sap_services
+
+- name: Set variable for start command
   set_fact:
-    stopsap_list_sap_services:  "{{ stopsap_list_sap_services.stdout_lines[0].split()[4] }}"
+    stopsap_list_sap_services: "{{ stopsap_list_sap_services.stdout }}"
+
+
+
 
 ###########################################
 # Check running SAP Service
@@ -116,7 +129,8 @@
 - name: Error if no SAP instance is active
   fail:
     msg: "Error: No active SAP instance found for SAP system {{ stopsap_input_sap_sid }}"
-  failed_when: stopsap_input_sap_instance_nr is undefined
+    #failed_when: stopsap_input_sap_instance_nr is undefined
+  failed_when: stopsap_list_instances_to_stop  is undefined
 
 #- name: Set variable for active instance
 #  set_fact:

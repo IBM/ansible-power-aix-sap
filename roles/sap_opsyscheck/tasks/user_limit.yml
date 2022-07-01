@@ -1,0 +1,55 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+##########################################################################
+# tasks file for user_limit check
+############################################################################
+
+- name: Check User limits
+  shell: grep -p 'default:' /etc/security/limits
+  register: sapopsyschk_user_limit_check_output
+
+- name: Display output
+  debug:
+    msg: "{{ sapopsyschk_user_limit_check_output.stdout_lines }}"
+
+- name: Check User limits for nofiles
+  shell: grep -p 'default:' /etc/security/limits | grep nofiles | awk '{print $3;}'
+  register: sapopsyschk_user_limit_nofiles_output
+
+- name: User Limit nofiles ok
+  debug:
+    msg: "OK: The default nofiles should be 32000 - Current: {{ sapopsyschk_user_limit_nofiles_output.stdout }}"
+  when: sapopsyschk_user_limit_nofiles_output.stdout | int >32000
+
+- name:  User Limit nofiles warning
+  debug:
+    msg: "WARNING:  The default nofiles should be at least 32000 - Current: {{ sapopsyschk_user_limit_nofiles_output.stdout }}"
+  when: sapopsyschk_user_limit_nofiles_output.stdout | int <32000
+
+- name: Check User limits for nofiles
+  shell: grep -p 'default:' /etc/security/limits | grep -v nofiles | grep -v "[-]1" | awk ' NR!=1 {print $3;}'
+  register: sapopsyschk_user_limit_output
+
+- name: User Limit unlimited ok
+  debug:
+    msg: "OK: The default user limits unlimitted(-1)"
+  when: sapopsyschk_user_limit_output.stdout | int ==0
+
+- name: User Limit unlimited warning
+  debug:
+    msg: "WARNING: The default user limits should be set to unlimitted(-1)"
+  when: sapopsyschk_user_limit_output.stdout | int !=0
+

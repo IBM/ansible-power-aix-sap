@@ -15,6 +15,23 @@
 
 # tasks file for sap_opsyscheck
   
+- name: TAGS check
+  fail:
+    msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role ROLE: nim_service_check or mount_free_space_check"
+  when:
+    - "not 'nim_service_check' in ansible_run_tags"
+    - "not 'mount_free_space_check' in ansible_run_tags"
+    - "not 'ntp_check' in ansible_run_tags"
+    - "not 'user_limit_check' in ansible_run_tags"
+    - "not 'maxuproc_check' in ansible_run_tags"
+    - "not 'io_completion_port_check' in ansible_run_tags"
+    - "not 'login_shell_check' in ansible_run_tags"
+    - "not 'etc_services_check' in ansible_run_tags"
+    - "not 'rootvg_check' in ansible_run_tags"
+    - "not 'logical_volumes_check' in ansible_run_tags"
+    - "not 'all' in ansible_run_tags"
+  tags: always
+
 - name: Check nim service
   import_tasks: nim_service_check.yml
   tags: nim_service_check
@@ -22,3 +39,35 @@
 - name: Check free space on mount
   import_tasks: mount_free_space_check.yml
   tags: mount_free_space_check
+
+- name: Check NTP
+  import_tasks: ntp_check.yml
+  tags: ntp_check
+
+- name: Check User limits
+  import_tasks: user_limit.yml
+  tags: user_limit_check
+
+- name: Check maxuproc
+  import_tasks: maxuproc_check.yml
+  tags: maxuproc_check
+
+- name: Check I/O-Completion Port
+  import_tasks: io_completion_port_check.yml
+  tags: io_completion_port_check
+
+- name: Check Login Shell
+  import_tasks: login_shell_check.yml
+  tags: login_shell_check
+
+- name: Check /etc/services
+  import_tasks: etc_services_check.yml
+  tags: etc_services_check
+  
+- name: Check rootvg
+  import_tasks: rootvg_check.yml
+  tags: rootvg_check
+  
+- name: Check Logical Volumes
+  import_tasks: logical_volumes_check.yml
+  tags: logical_volumes_check

@@ -39,6 +39,13 @@ galaxy_info:
   #   - 7
   #   - 99.99
 
+  platforms:
+    - name: AIX
+      versions:
+        - 7.1
+        - 7.2
+        - 7.3
+
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes
     # and categorizes the role. Users find roles by searching for tags. Be sure to

@@ -14,8 +14,24 @@
 #   limitations under the License.
 
 # tasks file for stop_db
-- name: Stop DB
+
+- name: Tags check
+  fail:
+   msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role stop_db: sap_stop_db2 sap_stop_hana sap_stop_oracle"
+  when: (not 'sap_stop_db2' in ansible_run_tags) and (not 'sap_stop_hana' in ansible_run_tags) and (not 'sap_stop_oracle' in ansible_run_tags)
+  tags: always
+
+- name: Stop HANA DB
+  import_tasks: sap_stop_hana.yml
+  when: "'sap_stop_hana' in ansible_run_tags"
+  tags: sap_stop_hana
+
+- name: Stop Db2 DB
   import_tasks: sap_stop_db2.yml
+  when: "'sap_stop_db2' in ansible_run_tags"
   tags: sap_stop_db2
 
-
+- name: Stop Oracle DB
+  import_tasks: sap_stop_oracle.yml
+  when: "'sap_stop_oracle' in ansible_run_tags"
+  tags: sap_stop_oracle

@@ -15,6 +15,13 @@
 
 # tasks file for install_saphostagent
 
+- name: Tags check
+  fail:
+    msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role ROLE: install_saphostagent"
+  when: "not 'install_saphostagent' in ansible_run_tags"
+  when: "not 'all' in ansible_run_tags"
+  tags: always
+
 # Install SAPHOSTAGENT using SAR file
 - name: Install saphostagent
   import_tasks: install_saphostagent.yml

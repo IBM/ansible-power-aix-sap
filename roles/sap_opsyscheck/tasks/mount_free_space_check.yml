@@ -17,15 +17,111 @@
 # tasks file for sap_opsyscheck_dir_mounted_managed_node free space check
 ############################################################################
 
-- name: Set variable for checking
+- name: Set variable for mounts
   set_fact:
-    sap_opsyscheck_dir_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto',sap_opsyscheck_dir_mount_managed_node) | list | first }}"
+    sap_opsyscheck_mounts_managed_node: "{{ ansible_mounts | map(attribute='mount') | list}}"
 
-- name: Check free space in GB on {{ sap_opsyscheck_dir_mount_managed_node }}
+- name: Error if no /usr/sap found
   debug:
-    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_dir_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on {{ sap_opsyscheck_dir_mount_managed_node }}"
-    
-- name: Check {{ sap_opsyscheck_dir_mount_managed_node }} for 5 GB free space
-  assert:
-    that: sap_opsyscheck_dir_mounted_managed_node.size_available/1024/1024/1024 > 5
-    msg: "Error: On {{ sap_opsyscheck_dir_mount_managed_node }} no 5 GB free space is available. For a SAP kernel upgrade 5 GB free space are recommended."
+    msg: "ERROR: No /usr/sap file system found"
+  when: "'/usr/sap' not in sap_opsyscheck_mounts_managed_node"
+
+- name: Error if no /sapmnt found
+  debug:
+    msg: "ERROR: No /sapmnt file system found"
+  when: "'/sapmnt' not in sap_opsyscheck_mounts_managed_node"
+
+- name: Error if no /db2 found
+  debug:
+    msg: "ERROR: No /db2 file system found"
+  when: "'/db2' not in sap_opsyscheck_mounts_managed_node"
+
+- name: Error if no /tmp found
+  debug:
+    msg: "ERROR: No /tmp file system found"
+  when: "'/tmp' not in sap_opsyscheck_mounts_managed_node"
+
+- name: Error if no /var found
+  debug:
+    msg: "ERROR: No /var file system found"
+  when: "'/var' not in sap_opsyscheck_mounts_managed_node"
+
+- name: Set variable for checking /usr/sap
+  set_fact:
+    sap_opsyscheck_usr_sap_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/usr/sap') | list | first }}"
+  when: "'/usr/sap' in sap_opsyscheck_mounts_managed_node"
+
+- name: Set variable for checking /sapmnt
+  set_fact:
+    sap_opsyscheck_sapmnt_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/sapmnt') | list | first }}"
+  when: "'/sapmnt' in sap_opsyscheck_mounts_managed_node"
+
+- name: Set variable for checking /db2
+  set_fact:
+    sap_opsyscheck_db2_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/db2') | list | first }}"
+  when: "'/db2' in sap_opsyscheck_mounts_managed_node"
+
+- name: Set variable for checking /tmp
+  set_fact:
+    sap_opsyscheck_tmp_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/tmp') | list | first }}"
+  when: "'/tmp' in sap_opsyscheck_mounts_managed_node"
+
+- name: Set variable for checking /var
+  set_fact:
+    sap_opsyscheck_var_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/var') | list | first }}"
+  when: "'/var' in sap_opsyscheck_mounts_managed_node"
+
+- name: Check free space in GB on /usr/sap
+  debug:
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_usr_sap_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /usr/sap"
+  when: "'/usr/sap' in sap_opsyscheck_mounts_managed_node"
+
+- name: Check free space in GB on /sapmnt
+  debug:
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_sapmnt_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /sapmnt"
+  when: "'/sapmnt' in sap_opsyscheck_mounts_managed_node"
+
+- name: Check free space in GB on /db2
+  debug:
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_db2_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /db2"
+  when: "'/db2' in sap_opsyscheck_mounts_managed_node"
+
+- name: Check free space in GB on /tmp
+  debug:
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_tmp_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /tmp"
+  when: "'/tmp' in sap_opsyscheck_mounts_managed_node"
+
+- name: Check free space in GB on /var
+  debug:
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_var_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /var"
+  when: "'/var' in sap_opsyscheck_mounts_managed_node"
+
+- name: Check /usr/sap for 10 GB free space
+  debug:
+    msg: "ERROR: On /usr/sap less than 10 GB free space is available."
+  when: "sap_opsyscheck_usr_sap_mounted_managed_node.size_available/1024/1024/1024 < 10"
+
+- name: Check /sapmnt for 5 GB free space
+  debug:
+    msg: "ERROR: On /sapmnt less than 5 GB free space is available."
+  when: "sap_opsyscheck_sapmnt_mounted_managed_node.size_available/1024/1024/1024 < 5"
+
+- name: Check /db2 for 50 GB free space
+  debug:
+    msg: "ERROR: On /db2 less than 50 GB free space is available."
+  when: "sap_opsyscheck_db2_mounted_managed_node.size_available/1024/1024/1024 < 50"
+
+- name: Check /tmp for 2 GB free space
+  debug:
+    msg: "ERROR: On /tmp less than 2 GB free space is available."
+  when: "sap_opsyscheck_tmp_mounted_managed_node.size_available/1024/1024/1024 < 2"
+
+- name: Check /var for 3 GB free space
+  debug:
+    msg: "ERROR: On /var less than 3 GB free space is available."
+  when: "sap_opsyscheck_var_mounted_managed_node.size_available/1024/1024/1024 < 3"
+
+  #- name: Check /usr/sap for 10 GB free space
+  #  assert:
+  #    that: sap_opsyscheck_dir_mounted_managed_node.size_available/1024/1024/1024 > 2
+  #    msg: "Error: On /usr/sap no 10 GB free space is available. For a SAP kernel upgrade 10 GB free space are recommended."

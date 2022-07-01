@@ -8,9 +8,10 @@ For detail guides and reference, please visit the <a href="https://ibm.github.io
 
 ## Requirements
 
-This role is intended for the operating system IBM aix. The target system must be enabled to execute Ansible playbooks. For details, see [README.md](../../README.md) in the general section about Ansible scripts for SAP on IBM aix systems.
+This role is intended for the operating system IBM AIX. The target system must be enabled to execute Ansible playbooks. For details, see [README.md](../../README.md) in the general section about Ansible scripts for SAP on IBM AIX systems.
 
 The role upgrade_sap_kernel will create a backup of directory `upgsapkrn_dir_upgrade_kernel` on the managed node into directory `upgsapkrn_dir_kernel_backup_managednode` on the managed node.
+
 All provided SAR files will be extracted into directory on the managed node specified in variable `upgsapkrn_dir_extracted_sar_managednode`.
 The extracted files will be copied into directory on the managed node specified in variable `upgsapkrn_dir_upgrade_kernel`.
 

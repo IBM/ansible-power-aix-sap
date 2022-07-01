@@ -37,10 +37,10 @@
 # Check SAP SID
 ###########################################
 - name: Search profile name for {{ startsap_input_sap_sid }} in /usr/sap/sapservices
-  shell:  "grep {{ startsap_input_sap_sid }} /usr/sap/sapservices | grep -v '^ *#'"
+  shell:  "grep {{ startsap_input_sap_sid }} /usr/sap/sapservices | grep -v '^ *#' | head -1"
   register: startsap_list_sap_services
   ignore_errors: True
-  no_log: True
+  #  no_log: True
 
 - name: Error if {{ startsap_input_sap_sid }} was not found in /usr/sap/sapservices
   fail:
@@ -50,15 +50,25 @@
 ###########################################
 # Get if there is any running service
 ###########################################
-- name: Set variable for SAP service profile
+#- name: Set variable for SAP service profile
+#  set_fact:
+#    startsap_list_sap_services:  "{{ startsap_list_sap_services.stdout_lines[0].split()[4] }}"
+
+- name: Search profile name for all sap instances in /usr/sap/sapservices
+  shell:  "grep sapstartsrv /usr/sap/sapservices | grep {{ startsap_input_sap_sid }} | grep -v '^ *#' |  awk -F 'pf=' '{ print $2;}' | cut -f1 -d' ' | head -1"
+  register: startsap_list_sap_services
+
+- name: Set variable for start command
   set_fact:
-    startsap_list_sap_services:  "{{ startsap_list_sap_services.stdout_lines[0].split()[4] }}"
+    startsap_list_sap_services: "{{ startsap_list_sap_services.stdout }}"
+
+
 
 ###########################################
 # Check running SAP Service
 ###########################################
 - name: Get one instance number from profile
-  shell: grep -w 'SAPSYSTEM'  "{{ startsap_list_sap_services|replace('pf=', '') }}"
+  shell: grep -w 'SAPSYSTEM'  "{{ startsap_list_sap_services }}"
   register: startsap_sap_sid_profile_name
 
 - name: Check if SAP instance is inactive
@@ -93,7 +103,8 @@
 - name: Set variable for inactive SAP instance
   set_fact:
     startsap_list_instances_to_start:  "{{ startsap_output_selected_inactive_instance.stdout_lines }}"
-  when:  startsap_output_selected_inactive_instance is defined
+          #startsap_list_instances_to_start:  "{{ startsap_output_selected_inactive_instance }}"
+  when:  startsap_input_sap_instance_nr is defined
 
 #######################
 # startsap_input_sap_instance_nr is undefined
@@ -116,8 +127,8 @@
 - name: Error if no SAP instance is inactive
   fail:
     msg: "Error: No inactive SAP instance found for SAP system {{ startsap_input_sap_sid }}"
-  failed_when: startsap_input_sap_instance_nr is undefined
-
+    #failed_when: startsap_input_sap_instance_nr is undefined
+  failed_when: startsap_list_instances_to_start is undefined
 #- name: Set variable for inactive instance
 #  set_fact:
 #    startsap_list_instances_to_start:  "{{ startsap_output_selected_inactive_instance.stdout_lines }}"

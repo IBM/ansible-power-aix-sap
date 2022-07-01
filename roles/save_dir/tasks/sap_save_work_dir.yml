@@ -1,0 +1,92 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+###########################################
+# tasks file for sap_save_work_dir
+###########################################
+
+###########################################
+# PreCheck database ID
+###########################################
+
+- name: Check if save_work_dir_input_dirname variable provided
+  fail:
+    msg: "Error: Input parameter save_work_dir_input_dirname is required."
+  when: (save_work_dir_input_dirname is not defined) or (save_work_dir_input_dirname is none)
+
+- name: Check if save_work_dir_input_save_dir variable provided
+  fail:
+    msg: "Error: Input parameter save_work_dir_input_save_dir is required."
+  when: (save_work_dir_input_save_dir is not defined) or (save_work_dir_input_save_dir is none)
+
+- name: Check if save_work_dir_input_save_fn variable provided
+  fail:
+    msg: "Error: Input parameter save_work_dir_input_save_fn is required."
+  when: (save_work_dir_input_save_fn is not defined) or (save_work_dir_input_save_fn is none)
+
+- name: Save of working director starts. core files and softlink to executables are not saved.
+  debug:
+    msg: "SAP working directory {{save_work_dir_input_dirname}} will be saved to: {{save_work_dir_input_save_dir}}/{{save_work_dir_input_save_fn}}.<timestamp>.tar.Z"
+
+- name: Check existence of directory {{save_work_dir_input_dirname}}
+  stat:
+    path: "{{save_work_dir_input_dirname}}"
+  register: file_data
+
+- name: Report if directory exists
+  debug:
+    msg: "Directory {{save_work_dir_input_dirname}} exits and can be saved."
+  when: file_data.stat.exists
+
+- name: Report directory does not exists
+  fail:
+    msg: "Directory {{save_work_dir_input_dirname}} does not exits - exit therefore."
+  when: not file_data.stat.exists
+
+
+- name: Check existence of directory {{save_work_dir_input_save_dir}}.
+  stat:
+    path: "{{save_work_dir_input_save_dir}}"
+  register: file_data
+
+- name: Report directory exists
+  debug:
+    msg: "Directory {{save_work_dir_input_save_dir}} exits and can be used for saving."
+  when: file_data.stat.exists
+
+- name: Report directory does not exists
+  fail:
+    msg: "Directory {{save_work_dir_input_save_dir}} does not exists - exit therefore."
+  when: not file_data.stat.exists
+
+
+######################################################
+# tar, compress and save directory
+######################################################
+- name: "Tar and compress the content of a working directory: {{save_work_dir_input_dirname}} into: {save_work_dir_input_save_dir}}/{{save_work_dir_input_save_fn}}.<date_time>.tar.Z"
+  shell: "cd {{save_work_dir_input_dirname}}; ls  | grep -v core > __ansible_123456789__ ; tar  -L __ansible_123456789__ -cvf -| compress > {{save_work_dir_input_save_dir}}/{{save_work_dir_input_save_fn}}.$(date +\"%Y%m%d%H%M\").tar.Z ; rm __ansible_123456789__"
+  register: save_work_dir_output
+
+- name: Message about success
+  fail:
+    msg: "Directory {{save_work_dir_input_save_dir}} could not be saved"
+  when: save_work_dir_output.rc != 0
+
+- name: Message about success
+  debug:
+    msg: "Directory  {{save_work_dir_input_dirname}} has been saved successfully to: {{save_work_dir_input_save_dir}}."
+  when: save_work_dir_output.rc == 0
+
+

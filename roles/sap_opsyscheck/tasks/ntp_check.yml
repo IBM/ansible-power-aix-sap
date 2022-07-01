@@ -1,0 +1,33 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+##########################################################################
+# tasks file for ntp daemon check
+############################################################################
+
+- name: Check NTP
+  shell: ps -ef | fgrep xntpd | grep -v grep
+  register: sapopsyschk_ntp_check_output
+  failed_when: sapopsyschk_ntp_check_output.rc == 0
+
+- name: Display warning
+  debug:
+    msg: "WARNING: No xntpd process found"
+  when: sapopsyschk_ntp_check_output.stdout == ""
+
+- name: Display OK
+  debug:
+    msg: "OK: xntpd process is running"
+  when: sapopsyschk_ntp_check_output.stdout != ""

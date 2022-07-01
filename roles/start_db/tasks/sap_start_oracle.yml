@@ -1,0 +1,110 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+###########################################
+# tasks file for sap_start_oracle
+###########################################
+
+###########################################
+# PreCheck database ID
+###########################################
+
+- name: Check if startdb_input_db_sid variable provided
+  fail:
+    msg: "Error: Input parameter startdb_input_db_sid is required."
+  when: (startdb_input_db_sid is not defined) or (startdb_input_db_sid is none)
+
+- name: Check if startdb_input_sap_sid variable provided
+  fail:
+    msg: "Error: Input parameter startdb_input_sap_sid is required."
+  when: (startdb_input_sap_sid is not defined) or (startdb_input_sap_sid is none)
+
+- name: ORACLE DB will be started.
+  debug:
+    msg: "Oracle DB instance {{startdb_input_db_sid}} will be started"
+
+
+######################################################
+# Validate user ora{{startdb_input_db_sid|lower}}
+######################################################
+- name: Validate user ora{{startdb_input_db_sid|lower}}
+  shell: "id ora{{startdb_input_db_sid|lower}}| grep -v grep | cat"
+  register: startdb_output_selected_active_oracle
+
+- name: Error if ora{{startdb_input_db_sid|lower}} does not exist
+  fail:
+    msg: "Error: User: ora{{startdb_input_db_sid|lower}} does not exist. Is {{startdb_input_db_sid|lower}} a correct DBSID? "
+  when: startdb_output_selected_active_oracle.stdout_lines|length == 0
+
+######################################################
+# Validate user {{startdb_input_sap_sid|lower}}adm
+######################################################
+- name: Validate user {{startdb_input_sap_sid|lower}}adm
+  shell: "id {{startdb_input_sap_sid|lower}}adm | grep -v grep | cat"
+  register: startdb_output_selected_active_oracle
+
+- name: Error if {{startdb_input_sap_sid|lower}}adm does not exist
+  fail:
+    msg: "Error: User: {{startdb_input_sap_sid|lower}}adm does not exist. Is {{startdb_input_db_sid|lower}} a correct DBSID? "
+  when: startdb_output_selected_active_oracle.stdout_lines|length == 0
+
+
+
+##
+####################################################
+# Validate startdb_input_db_sid on target system
+######################################################
+# ls $ORACLE_HOME/bin | grep -v grep | cat
+- name: Validate startdb_input_db_sid
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "ora{{startdb_input_db_sid|lower}}"
+  shell: "ls /$ORACLE_HOME/bin | grep -v grep | cat "
+  register: startdb_output_selected_active_oracle
+
+- name: Error if startdb_input_db_sid is invalid
+  fail:
+    msg: "Error: Provided DBSID: {{startdb_input_db_sid}} is invalid. $ORACLE_HOME/bin/ does not exist."
+  when: startdb_output_selected_active_oracle.stdout_lines|length == 0
+
+
+######################################################
+# Start Oracle instance
+######################################################
+- name: Start Oracle listener
+  ignore_errors: yes
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "ora{{startdb_input_db_sid|lower}}"
+  shell: "/$ORACLE_HOME/bin/lsnrctl  start"
+  register: startdb_output_selected_active_oracle
+
+- name: Oracle listener status.
+  debug:
+    msg: "Oracle listener already started."
+  when:  startdb_output_selected_active_oracle.stdout | regex_search("TNS-01106")
+
+
+
+- name: Start Oracle Instance
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "{{startdb_input_sap_sid|lower}}adm"
+  shell: "startdb"
+
+

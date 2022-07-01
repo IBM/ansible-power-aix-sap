@@ -14,5 +14,3 @@
 #   limitations under the License.
 
 # defaults file for sap_opsyscheck
-
-sap_opsyscheck_dir_mount_managed_node: "/sapmnt"

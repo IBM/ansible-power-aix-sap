@@ -1,0 +1,107 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+###########################################
+# tasks file for sap_start_hana
+###########################################
+
+###########################################
+# PreCheck database ID
+###########################################
+- name: Check if startdb_force variable provided
+  debug:
+   msg: "If startdb_force is set, then the DB - start command is issued even if the DB is already started"
+  when: (startdb_force is defined)
+
+- name: Check if startdb_input_db_sid variable provided
+  fail:
+    msg: "Error: Input parameter startdb_input_db_sid is required."
+  when: (startdb_input_db_sid is not defined) or (startdb_input_db_sid is none)
+
+- name: Check if startdb_input_hdb_instance_number provided
+  fail:
+    msg: "Error: Input parameter startdb_input_hdb_instance_number is required."
+  when: (startdb_input_hdb_instance_number is not defined) or (startdb_input_hdb_instance_number is none)
+
+- name: HANA DB will be started.
+  debug:
+    msg: "HANA DB instance HDB{{startdb_input_hdb_instance_number}} will be started"
+######################################################
+# Validate user {{startdb_input_db_sid|lower}}adm
+######################################################
+- name: Validate user {{startdb_input_db_sid|lower}}adm
+  shell: "id {{startdb_input_db_sid|lower}}adm | grep -v grep | cat"
+  register: startdb_output_selected_active_hana
+
+- name: Error if {{startdb_input_db_sid|lower}}adm does not exist
+  fail:
+    msg: "Error: User: {{startdb_input_db_sid|lower}}adm does not exist."
+  when: startdb_output_selected_active_hana.stdout_lines|length == 0
+######################################################
+# Validate startdb_input_db_sid on target system
+######################################################
+- name: Validate startdb_input_db_sid
+  become_user: "{{startdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "ls /usr/sap/{{startdb_input_db_sid}} | grep -v grep | cat"
+  register: startdb_output_selected_active_hana
+
+- name: Error if startdb_input_db_sid is invalid
+  fail:
+    msg: "Error: Provided DBSID: {{startdb_input_db_sid}} is invalid. /usr/sap/{{startdb_input_db_sid}} does not exist."
+  when: startdb_output_selected_active_hana.stdout_lines|length == 0
+
+######################################################
+# Validate startdb_input_hdb_instance_number  on target system
+######################################################
+- name: Validate startdb_input_hdb_instance_number
+  become_user: "{{startdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "ls /usr/sap/{{startdb_input_db_sid}}//HDB{{startdb_input_hdb_instance_number}}/HDB | grep -v grep | cat"
+  register: startdb_output_selected_active_hana
+
+- name: Error if startdb_input_hdb_instance_number is invalid
+  fail:
+    msg: "Error: Provided Instance Number: {{startdb_input_hdb_instance_number}} is invalid. /usr/sap/{{startdb_input_db_sid}}//HDB{{startdb_input_hdb_instance_number}}/HDB does not exist"
+  when: startdb_output_selected_active_hana.stdout_lines|length == 0
+
+
+
+######################################################
+# Check for running HANA instance
+######################################################
+- name: Check status of HANA instance
+  become_user: "{{startdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "/usr/sap/{{startdb_input_db_sid}}/HDB{{startdb_input_hdb_instance_number}}/HDB info| grep  hdbindexserver | grep -v grep | cat"
+  register: startdb_output_selected_active_hana
+
+- name: Info if HANA instance is already running
+  debug:
+    msg: "Info: HANA instance already started"
+  when: startdb_output_selected_active_hana.stdout_lines|length > 0
+
+- meta: end_play
+  when: (startdb_force is not defined and startdb_output_selected_active_hana.stdout_lines|length > 0)
+
+
+######################################################
+# Start HANA instance
+######################################################
+- name: Start HANA instance
+  become_user: "{{startdb_input_db_sid|lower}}adm"
+  become: yes
+  shell: "/usr/sap/{{startdb_input_db_sid}}/HDB{{startdb_input_hdb_instance_number}}/HDB start"
+

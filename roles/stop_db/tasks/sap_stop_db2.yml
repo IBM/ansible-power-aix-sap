@@ -25,6 +25,17 @@
     msg: "Error: Input parameter stopdb_input_db_sid is required."
   when: (stopdb_input_db_sid is not defined) or (stopdb_input_db_sid is none)
 
+##########################################
+# Check that he specified user exist
+##########################################
+- name: Validate user "db2{{stopdb_input_db_sid|lower}}"
+  shell: "id db2{{stopdb_input_db_sid|lower}} | grep -v grep | cat"
+  register: check_user_existence
+
+- name: Error if "db2{{stopdb_input_db_sid|lower}}" does not exist
+  fail:
+    msg: "Error: User: db2{{stopdb_input_db_sid|lower}} does not exist."
+  when: check_user_existence.stderr_lines|length > 0
 
 ######################################################
 # Check for running Db2 instance

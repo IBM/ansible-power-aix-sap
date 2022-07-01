@@ -1,0 +1,113 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+###########################################
+# tasks file for sap_stop_oracle
+###########################################
+
+###########################################
+# PreCheck database ID
+###########################################
+
+- name: Check if stopdb_input_db_sid variable provided
+  fail:
+    msg: "Error: Input parameter stopdb_input_db_sid is required."
+  when: (stopdb_input_db_sid is not defined) or (stopdb_input_db_sid is none)
+
+
+- name: Check if stopdb_input_sap_sid variable provided
+  fail:
+    msg: "Error: Input parameter stopdb_input_sap_sid is required."
+  when: (stopdb_input_sap_sid is not defined) or (stopdb_input_sap_sid is none)
+
+
+- name: ORACLE DB will be stopped.
+  debug:
+    msg: "Oracle DB instance {{stopdb_input_db_sid}} will be stopped"
+
+
+######################################################
+# Validate user ora{{stopdb_input_db_sid|lower}}
+######################################################
+- name: Validate user ora{{stopdb_input_db_sid|lower}}
+  shell: "id ora{{stopdb_input_db_sid|lower}}| grep -v grep | cat"
+  register: stopdb_output_selected_active_oracle
+
+- name: Error if ora{{stopdb_input_db_sid|lower}} does not exist
+  fail:
+    msg: "Error: User: ora{{stopdb_input_db_sid|lower}} does not exist. Is {{stopdb_input_db_sid|lower}} a correct DBSID? "
+  when: stopdb_output_selected_active_oracle.stdout_lines|length == 0
+
+######################################################
+# Validate user {{stopdb_input_sap_sid|lower}}adm
+######################################################
+- name: Validate user {{stopdb_input_sap_sid|lower}}adm
+  shell: "id {{stopdb_input_sap_sid|lower}}adm | grep -v grep | cat"
+  register: stopdb_output_selected_active_oracle
+
+- name: Error if {{stopdb_input_sap_sid|lower}}adm does not exist
+  fail:
+    msg: "Error: User: {{stopdb_input_sap_sid|lower}}adm does not exist. Is {{stopdb_input_db_sid|lower}} a correct DBSID? "
+  when: stopdb_output_selected_active_oracle.stdout_lines|length == 0
+
+
+######################################################
+# Validate stopdb_input_db_sid on target system
+######################################################
+# ls $ORACLE_HOME/bin | grep -v grep | cat
+- name: Validate stopdb_input_db_sid
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "ora{{stopdb_input_db_sid|lower}}"
+  shell: "ls /$ORACLE_HOME/bin | grep -v grep | cat "
+  register: stopdb_output_selected_active_oracle
+
+- name: Error if stopdb_input_db_sid is invalid
+  fail:
+    msg: "Error: Provided DBSID: {{stopdb_input_db_sid}} is invalid. $ORACLE_HOME/bin/ does not exist."
+  when: stopdb_output_selected_active_oracle.stdout_lines|length == 0
+
+
+######################################################
+# Stop Oracle instance
+######################################################
+
+- name: Stop Oracle Instance.
+  ignore_errors: yes
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "{{stopdb_input_sap_sid|lower}}adm"
+  shell: "stopdb"
+
+
+- name: Stop Oracle listener.
+  ignore_errors: yes
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "ora{{stopdb_input_db_sid|lower}}"
+  shell: "/$ORACLE_HOME/bin/lsnrctl  stop"
+  register: stopdb_output_selected_active_oracle
+
+
+
+- name: Oracle listener status.
+  debug:
+    msg: "Oracle listener already stopped."
+  when:  stopdb_output_selected_active_oracle.stdout | regex_search("Connection refused")
+
+

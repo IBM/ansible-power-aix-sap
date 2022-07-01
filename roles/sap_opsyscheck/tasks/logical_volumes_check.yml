@@ -1,0 +1,53 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+##########################################################################
+# tasks file for ntp daemon check
+############################################################################
+
+- name: Check Logical Volumes
+  shell: lsvg
+  register: sapopsyschk_lv_check_output
+
+- name: Display OK
+  debug:
+    msg: "OK: rootvg and datavg exist"
+  when: "'rootvg' and 'datavg' in sapopsyschk_lv_check_output.stdout"
+
+- name: Display warning
+  debug:
+    msg: "WARNING: rootvg or datavg doesn't exist"
+  when: "'rootvg' and 'datavg' not in sapopsyschk_lv_check_output.stdout"
+
+- name: Check Logical Volumes
+  shell: lsvg -l datavg | grep -w 'jfs2' | awk '{ print $7; }'
+  register: sapopsyschk_lv_check_output
+
+- name: Display warning
+  debug:
+    msg: "WARNING: datavg is not correct"
+  when: "'/usr/sap' and '/db2' and '/sapmnt' not in sapopsyschk_lv_check_output.stdout"
+
+- name: Display ok
+  debug:
+    msg: "OK: datavg looks fine"
+  when: "'/usr/sap' and '/db2' and '/sapmnt' in sapopsyschk_lv_check_output.stdout"
+
+- name: Display available jfs2 mounts on datavg
+  debug:
+    msg: "{{ sapopsyschk_lv_check_output.stdout_lines }}"
+  when: "'/usr/sap' and '/db2' and '/sapmnt' in sapopsyschk_lv_check_output.stdout"
+
+

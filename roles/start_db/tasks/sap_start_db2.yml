@@ -25,6 +25,17 @@
     msg: "Error: Input parameter startdb_input_db_sid is required."
   when: (startdb_input_db_sid is not defined) or (startdb_input_db_sid is none)
 
+##########################################
+# Check that he specified user exist
+##########################################
+- name: Validate user "db2{{startdb_input_db_sid|lower}}"
+  shell: "id db2{{startdb_input_db_sid|lower}} | grep -v grep | cat"
+  register: check_user_existence
+
+- name: Error if "db2{{startdb_input_db_sid|lower}}" does not exist
+  fail:
+    msg: "Error: User: db2{{startdb_input_db_sid|lower}} does not exist."
+  when: check_user_existence.stderr_lines|length > 0
 
 ######################################################
 # Check for running Db2 instance
@@ -37,7 +48,7 @@
   debug:
     msg: "Info: Db2 instance already started"
   when: startdb_output_selected_active_db2.stdout_lines|length > 0
-  
+
 - meta: end_play
   when: startdb_output_selected_active_db2.stdout_lines|length > 0
 

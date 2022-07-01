@@ -14,8 +14,24 @@
 #   limitations under the License.
 
 # tasks file for start_db
-- name: Start DB
+
+- name: Tags check
+  fail:
+    msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role start_db: sap_start_db2 sap_start_hana sap_start_oracle"
+  when: (not 'sap_start_db2' in ansible_run_tags) and (not 'sap_start_hana' in ansible_run_tags) and  (not 'sap_start_oracle' in ansible_run_tags)
+  tags: always
+
+- name: Start HANA DB
+  import_tasks: sap_start_hana.yml
+  when: "'sap_start_hana' in ansible_run_tags"
+  tags: sap_start_hana
+
+- name: Start Db2 DB
   import_tasks: sap_start_db2.yml
+  when: "'sap_start_db2' in ansible_run_tags"
   tags: sap_start_db2
 
-
+- name: Start Oracle DB
+  import_tasks: sap_start_oracle.yml
+  when: "'sap_start_oracle' in ansible_run_tags"
+  tags: sap_start_oracle

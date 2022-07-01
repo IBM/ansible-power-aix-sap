@@ -10,7 +10,7 @@ For detail guides and reference, please visit the <a href="https://ibm.github.io
 
 ## Requirements
 
-This role is intended for the operating system IBM aix. The target system must be enabled to execute Ansible playbooks. For details, see [README.md](../../README.md) in the general section about Ansible scripts for SAP on IBM aix systems.
+This role is intended for the operating system IBM AIX. The target system must be enabled to execute Ansible playbooks. For details, see [README.md](../../README.md) in the general section about Ansible scripts for SAP on IBM AIX systems.
 
 ## Dependencies
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Role start_db &mdash; IBM ansible-power-aix-sap collection 1.1.0 documentation</title>
+  <title>Role save_dir &mdash; IBM ansible-power-aix-sap collection 1.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Role start_sap" href="start_sap.html" />
-    <link rel="prev" title="Role save_dir" href="save_dir.html" /> 
+    <link rel="next" title="Role start_db" href="start_db.html" />
+    <link rel="prev" title="Role sap_opsyscheck" href="sap_opsyscheck.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,8 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="install_saphostagent.html">Role install_saphostagent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sap_install_app_server.html">Role sap_install_app_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sap_opsyscheck.html">Role sap_opsyscheck</a></li>
-<li class="toctree-l1"><a class="reference internal" href="save_dir.html">Role save_dir</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Role start_db</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Role save_dir</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tags">Tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#variables">Variables</a></li>
@@ -59,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#copyright">Copyright</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="start_db.html">Role start_db</a></li>
 <li class="toctree-l1"><a class="reference internal" href="start_sap.html">Role start_sap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stop_sap.html">Role stop_sap</a></li>
@@ -84,9 +84,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Role start_db</li>
+      <li>Role save_dir</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/IBM/ansible-power-aix-sap/blob/main/docs/docsite/start_db.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/IBM/ansible-power-aix-sap/blob/main/docs/docsite/save_dir.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -94,13 +94,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="role-start-db">
-<span id="ibm-ansible-power-aix-sap-docsite-start-db"></span><h1><a class="toc-backref" href="#id1">Role start_db</a><a class="headerlink" href="#role-start-db" title="Permalink to this headline"></a></h1>
-<p>The role start_db is used to start a database instance. Currently supported databases are IBM Db2 for Linux, Unix and Windows (LUW), Oracle and SAP HANA. When using this role, you must specify the database system id in a variable and select the database type through a tag. If the requested database is already started, the request will be ignored and an informational message will be sent. A description of the tags and variables can be found in the related sections of this document.</p>
+  <section id="role-save-dir">
+<span id="ibm-ansible-power-aix-sap-docsite-save-dir"></span><h1><a class="toc-backref" href="#id1">Role save_dir</a><a class="headerlink" href="#role-save-dir" title="Permalink to this headline"></a></h1>
+<p>The role save_dir can be used to save the content of a given directory. Currently the role supports saving SAP work directories, such as /usr/sap/<code class="docutils literal notranslate"><span class="pre">sid</span></code>/<code class="docutils literal notranslate"><span class="pre">instance</span></code>/work. The content of the selected directory is compressed with the tar utility and saved to a directory that is specified through an input parameter. The compressed archive will not include core files and soft links.</p>
+<p>To protect the resulting output files from being overwritten, names consisting of the following components will be generated:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 51%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Source</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Directory</p></td>
+<td><p>variable <code class="docutils literal notranslate"><span class="pre">save_work_dir_input_save_dir</span></code></p></td>
+<td><p>/backup/KD1/custhost01/00</p></td>
+</tr>
+<tr class="row-odd"><td><p>Name pattern</p></td>
+<td><p>variable <code class="docutils literal notranslate"><span class="pre">save_work_dir_input_save_fn</span></code></p></td>
+<td><p>KD1_00</p></td>
+</tr>
+<tr class="row-even"><td><p>Timestamp</p></td>
+<td><p>current timestamp</p></td>
+<td><p>202204261912</p></td>
+</tr>
+<tr class="row-odd"><td><p>Suffix</p></td>
+<td><p>constant</p></td>
+<td><p>tar.Z</p></td>
+</tr>
+</tbody>
+</table>
+<p>In the previous example, the resulting file will be <code class="docutils literal notranslate"><span class="pre">/backup/KD1/custhost01/00/KD1_00.202204261912.tar.Z</span></code>.</p>
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title">Table of contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#role-start-db" id="id1">Role start_db</a></p>
+<li><p><a class="reference internal" href="#role-save-dir" id="id1">Role save_dir</a></p>
 <ul>
 <li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
 <li><p><a class="reference internal" href="#tags" id="id3">Tags</a></p></li>
@@ -118,35 +151,25 @@
 <section id="requirements">
 <h2><a class="toc-backref" href="#id2">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
 <p>This role is intended for the operating system IBM AIX. The target system must be enabled to execute Ansible playbooks. For details, see the prerequisites section in <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-prerequisites"><span class="std std-ref">Ansible Content for IBM Power Systems - AIX with SAP Software</span></a>.</p>
-<p>The requested database instance must be installed on the managed node and operational.</p>
+<p>The directory to be saved, which is specified in variable <code class="docutils literal notranslate"><span class="pre">save_work_dir_input_dirname</span></code>, must exist.</p>
+<p>The target directory for the compressed archive, which is specified in variable <code class="docutils literal notranslate"><span class="pre">save_work_dir_input_dirname</span></code>, must have enough space to hold the backups.</p>
 </section>
 <section id="tags">
 <h2><a class="toc-backref" href="#id3">Tags</a><a class="headerlink" href="#tags" title="Permalink to this headline"></a></h2>
-<p>Specify one of the following tags to specify the database type to be started. If you do not specify a tag, an error message will be sent.</p>
+<p>The following tag can be specified optionally. Omitting the tag or specifying tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">all</span></code> has the same effect.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 13%" />
-<col style="width: 21%" />
-<col style="width: 66%" />
+<col style="width: 24%" />
+<col style="width: 76%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>DB type</p></th>
-<th class="head"><p>Tag</p></th>
-<th class="head"><p>Description</p></th>
+<tr class="row-odd"><th class="head"><p>Tag</p></th>
+<th class="head"><p>Usage</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>IBM Db2 LUW</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sap_start_db2</span></code></p></td>
-<td><p>Start a database instance of type IBM Db2 LUW</p></td>
-</tr>
-<tr class="row-odd"><td><p>SAP HANA</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sap_start_hana</span></code></p></td>
-<td><p>Start a database instance of type SAP HANA</p></td>
-</tr>
-<tr class="row-even"><td><p>Oracle</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sap_start_oracle</span></code></p></td>
-<td><p>Start a database instance of type Oracle and a listener</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_save_work_dir</span></code></p></td>
+<td><p>The specified working directory of an SAP system will be saved to the specified archive.</p></td>
 </tr>
 </tbody>
 </table>
@@ -155,44 +178,29 @@
 <h2><a class="toc-backref" href="#id4">Variables</a><a class="headerlink" href="#variables" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 9%" />
-<col style="width: 28%" />
-<col style="width: 56%" />
-<col style="width: 7%" />
+<col style="width: 30%" />
+<col style="width: 62%" />
+<col style="width: 8%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>DB Type</p></th>
-<th class="head"><p>Variable</p></th>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
 <th class="head"><p>Usage</p></th>
 <th class="head"><p>Required</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>IBM Db2 LUW</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">startdb_input_db_sid</span></code></p></td>
-<td><p>DB system ID</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">save_work_dir_input_dirname</span></code></p></td>
+<td><p>Directory path of the SAP work directory to be saved.</p></td>
 <td><p>Yes</p></td>
 </tr>
-<tr class="row-odd"><td rowspan="3"><p>SAP HANA</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">startdb_input_db_sid</span></code></p></td>
-<td><p>DB system ID</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">save_work_dir_input_save_dir</span></code></p></td>
+<td><p>Target directory where the archive will be stored</p></td>
 <td><p>Yes</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">startdb_input_hdb_instance_number</span></code></p></td>
-<td><p>Instance number of SAP HANA DB</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">startdb_force</span></code></p></td>
-<td><p>The startdb command is executed even if the database is already started.</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td rowspan="2"><p>Oracle</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">startdb_input_db_sid</span></code></p></td>
-<td><p>DB system ID</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">startdb_input_sap_sid</span></code></p></td>
-<td><p>SAP system ID</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">save_work_dir_input_save_fn</span></code></p></td>
+<td><p>File name pattern for the resulting archive. It is recommended to select
+a pattern that contains the SAP system ID and instance number of the
+SAP instance that owns the saved work directory.</p></td>
 <td><p>Yes</p></td>
 </tr>
 </tbody>
@@ -208,18 +216,20 @@
 </section>
 <section id="example-playbook">
 <h2><a class="toc-backref" href="#id7">Example Playbook</a><a class="headerlink" href="#example-playbook" title="Permalink to this headline"></a></h2>
-<p>The example playbook is based on the assumption that a configuration file and an inventory file with contents similar to the <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"><span class="std std-ref">configuration documentation</span></a> exist in the current directory. The example playbook in the current directory is named start_hana_db.yml and has the following contents:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibmaix_servers</span><span class="w"></span>
+<p>You plan to save the working directory <code class="docutils literal notranslate"><span class="pre">/usr/sap/KD1/D00/work</span></code> of your SAP system KD1.</p>
+<p>You have created the following file save_logs.yml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Save SAP work directory</span><span class="w"></span>
+<span class="w">  </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibmaix_servers</span><span class="w"></span>
 <span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">startdb_input_db_sid</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PRD&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">startdb_input_hdb_instance_number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">00</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">startdb_force</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Y&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">save_work_dir_input_dirname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/usr/sap/KD1/D00/work&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">save_work_dir_input_save_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/tmp&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">save_work_dir_input_save_fn</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;KD1_00&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ansible_dir&gt;/roles/start_db</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ansible-dir&gt;/roles/sap_save_work_dir</span><span class="w"></span>
 </pre></div>
 </div>
-<p>To execute this playbook, enter the command:</p>
-<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose -t sap_start_hana start_hana_db.yml</span><span class="w"></span>
+<p>Run the save of the work directory /usr/sap/KD1/D00/work by executing:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook -t sap_save_work_dir save_logs.yml</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -233,7 +243,7 @@
 </section>
 <section id="copyright">
 <h2><a class="toc-backref" href="#id10">Copyright</a><a class="headerlink" href="#copyright" title="Permalink to this headline"></a></h2>
-<p>Copyright IBM Corporation 2022</p>
+<p>Copyright IBM Corporation 2021,2022</p>
 </section>
 </section>
 
@@ -241,8 +251,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="save_dir.html" class="btn btn-neutral float-left" title="Role save_dir" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="start_sap.html" class="btn btn-neutral float-right" title="Role start_sap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sap_opsyscheck.html" class="btn btn-neutral float-left" title="Role sap_opsyscheck" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="start_db.html" class="btn btn-neutral float-right" title="Role start_db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

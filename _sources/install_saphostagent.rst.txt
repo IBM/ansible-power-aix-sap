@@ -20,7 +20,18 @@ This role is intended for the operating system IBM AIX. The target system must b
 Checking prerequisites for installing the SAP Host Agent
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Check if the target system has enough free storage.
+Check if the target system has enough free storage.
+
+Tags
+----
+
+The following tag can be specified optionally. Omitting the tag or specifying tag ``-t all`` has the same effect.
+
++--------------------------+------------------------------------------------------------------+
+| Tag                      | Usage                                                            |
++==========================+==================================================================+
+| ``install_saphostagent`` | Install the SAP Host Agent.                                      |
++--------------------------+------------------------------------------------------------------+
 
 Variables
 ---------

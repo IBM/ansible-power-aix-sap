@@ -15,16 +15,22 @@ Features
 The following roles for administrator tasks with SAP on IBM AIX are provided:
 
   - :ref:`Installing or upgrading the SAP Host Agent <IBM.ansible-power-aix-sap.docsite.install_saphostagent>`
+
+  - :ref:`Installing additional SAP application servers <IBM.ansible-power-aix-sap.docsite.sap_install_app_server>`
   
   - :ref:`Check basic operating system settings <IBM.ansible-power-aix-sap.docsite.sap_opsyscheck>`
 
-  - :ref:`Start Db2 database instances <IBM.ansible-power-aix-sap.docsite.start_db>`
+  - :ref:`Save SAP work directories <IBM.ansible-power-aix-sap.docsite.save_dir>`
+
+  - :ref:`Start database instances <IBM.ansible-power-aix-sap.docsite.start_db>`
 
   - :ref:`Start SAP instances <IBM.ansible-power-aix-sap.docsite.start_sap>`
 
-  - :ref:`Stop Db2 database instances <IBM.ansible-power-aix-sap.docsite.stop_db>`
+  - :ref:`Stop database instances <IBM.ansible-power-aix-sap.docsite.stop_db>`
 
   - :ref:`Stop SAP instances <IBM.ansible-power-aix-sap.docsite.stop_sap>`
+
+  - :ref:`Upgrade the client software for an SAP HANA database <IBM.ansible-power-aix-sap.docsite.upgrade_sap_HANA_client>`
 
   - :ref:`Upgrade the kernel of an already existing SAP system <IBM.ansible-power-aix-sap.docsite.upgrade_sap_kernel>`
 
@@ -60,11 +66,14 @@ Copyright IBM Corporation 2021,2022
    :hidden:
 
    install_saphostagent
+   sap_install_app_server
    sap_opsyscheck
+   save_dir
    start_db
    start_sap
    stop_db
    stop_sap
+   upgrade_sap_HANA_client
    upgrade_sap_kernel
 
 .. toctree::

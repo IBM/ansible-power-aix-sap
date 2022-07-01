@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Role upgrade_sap_kernel" href="upgrade_sap_kernel.html" />
+    <link rel="next" title="Role upgrade_sap_HANA_client" href="upgrade_sap_HANA_client.html" />
     <link rel="prev" title="Role stop_db" href="stop_db.html" /> 
 </head>
 
@@ -44,7 +44,9 @@
 <p class="caption" role="heading"><span class="caption-text">Available roles</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install_saphostagent.html">Role install_saphostagent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sap_install_app_server.html">Role sap_install_app_server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sap_opsyscheck.html">Role sap_opsyscheck</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save_dir.html">Role save_dir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="start_db.html">Role start_db</a></li>
 <li class="toctree-l1"><a class="reference internal" href="start_sap.html">Role start_sap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
@@ -63,6 +65,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#copyright">Copyright</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="upgrade_sap_HANA_client.html">Role upgrade_sap_HANA_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="upgrade_sap_kernel.html">Role upgrade_sap_kernel</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Role Based Access Control</span></p>
@@ -96,9 +99,9 @@
              
   <section id="role-stop-sap">
 <span id="ibm-ansible-power-aix-sap-docsite-stop-sap"></span><h1><a class="toc-backref" href="#id10">Role stop_sap</a><a class="headerlink" href="#role-stop-sap" title="Permalink to this headline"></a></h1>
-<p>The role stop_sap is used to stop one or multiple SAP instances, either for a given SAP system ID (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instance</span></code>) or for all SAP systems that are configured in file /usr/sap/sapservices (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_all_instances</span></code>). If a requested SAP instance is already inactive, the request will be ignored and no error message will be sent. The role stop_sap is using the sapcontrol command of the SAP Host Agent as suggested in <a class="reference external" href="https://launchpad.support.sap.com/#/notes/1763593">SAP Note 1763593</a>. It requires that the SAP start services for the selected instances are active. By default, the SAP start services are started automatically after a system restart. If the SAP start services are not active, they can be started by using this role with the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code>.</p>
-<p>If the role stop_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instance</span></code>, it needs the SAP system ID as input in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code>. An SAP instance number can be provided optionally in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_instance_nr</span></code>. If an instance number is provided, only this instance is stopped. If no instance number is provided, stop_sap will stop all configured instances for the given SID, also on remote servers in a distributed landscape. It is recommended that the role stop_sap is executed on the logical partition or server that hosts the central services instance (ASCS, SCS), the primary application server instance, or the central instance.</p>
-<p>If the role stop_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_all_instances</span></code>, the values in the variables <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code> and <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_instance_nr</span></code> are ignored. Instead, all SAP systems that are configured in file /usr/sap/sapservices will be stopped with all their instances.</p>
+<p>The role stop_sap is used to stop one or multiple SAP instances, either for a given SAP system ID (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instances</span></code>) or for all SAP systems that are configured in file /usr/sap/sapservices (tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_all_systems</span></code>). If a requested SAP instance is already inactive, the request will be ignored and no error message will be sent. The role stop_sap is using the sapcontrol command of the SAP Host Agent as suggested in <a class="reference external" href="https://launchpad.support.sap.com/#/notes/1763593">SAP Note 1763593</a>. It requires that the SAP start services for the selected instances are active. By default, the SAP start services are started automatically after a system restart. If the SAP start services are not active, they can be started by using this role with the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_start_services</span></code>.</p>
+<p>If the role stop_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instances</span></code>, it needs the SAP system ID as input in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code>. An SAP instance number can be provided optionally in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_instance_nr</span></code>. If an instance number is provided, only this instance is stopped. If no instance number is provided, stop_sap will stop all configured instances for the given SID, also on remote servers in a distributed landscape. It is recommended that the role stop_sap is executed on the logical partition or server that hosts the central services instance (ASCS, SCS), the primary application server instance, or the central instance.</p>
+<p>If the role stop_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_all_systems</span></code>, the values in the variables <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code> and <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_instance_nr</span></code> are ignored. Instead, all SAP systems that are configured in file /usr/sap/sapservices will be stopped with all their instances.</p>
 <p>If the role stop_sap is used with tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_services</span></code>, you can specify a SAP system ID in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code> or the special value <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>. If you specify <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>, SAP start services will be stopped for all SAP systems that are configured in /usr/sap/sapservices.</p>
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title">Table of contents</p>
@@ -125,7 +128,7 @@
 </section>
 <section id="tags">
 <h2><a class="toc-backref" href="#id12">Tags</a><a class="headerlink" href="#tags" title="Permalink to this headline"></a></h2>
-<p>Specify one of the following tags to specify what parts of an SAP system you want to stop. If you do not specify a tag, <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instance</span></code> will be assumed as default. If you misspell the tag, no steps in the role will be executed.</p>
+<p>Specify one of the following tags to specify what parts of an SAP system you want to stop. If you do not specify a tag, <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instances</span></code> will be assumed as default. If you misspell the tag, an error message will be sent.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 24%" />
@@ -137,12 +140,12 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_stop_instance</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_stop_instances</span></code></p></td>
 <td><p>One or all instances for a specific SAP system ID are stopped. The SAP system ID must be
 specified in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code>, the instance number can optionally be
 specified in variable <code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_instance_nr</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sap_stop_all_instances</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sap_stop_all_systems</span></code></p></td>
 <td><p>All instances are stopped for all SAP systems that are configured in file /usr/sap/sapservices.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sap_stop_services</span></code></p></td>
@@ -197,10 +200,10 @@ or for all SAP systems that are configured in file /usr/sap/sapservices when var
 <dd><p>Default provided.</p>
 </dd>
 <dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>The variable is only evaluated when the tags <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instance</span></code> or <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_services</span></code> are set.</p>
+<dd><p>The variable is only evaluated when the tags <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instances</span></code> or <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_services</span></code> are set.</p>
 </dd>
 <dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>The variable is only evaluated when the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instance</span></code> is set. If the variable is omitted, all instances of the specified SAP system ID will be stopped.</p>
+<dd><p>The variable is only evaluated when the tag <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">sap_stop_instances</span></code> is set. If the variable is omitted, all instances of the specified SAP system ID will be stopped.</p>
 </dd>
 <dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
 <dd><p>When the parameter is omitted, a hard shutdown is executed.</p>
@@ -240,20 +243,23 @@ or for all SAP systems that are configured in file /usr/sap/sapservices when var
 </section>
 <section id="example-playbook">
 <h2><a class="toc-backref" href="#id16">Example Playbook</a><a class="headerlink" href="#example-playbook" title="Permalink to this headline"></a></h2>
-<p>You plan to stop a SAP system with SAP SID (<code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code>) PRD having at least one instance on LPAR ibmaixserver01.mycorp.com</p>
+<p>You plan to stop a SAP system with SAP SID (<code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_sid</span></code>) PRD with instance number (<code class="docutils literal notranslate"><span class="pre">stopsap_input_sap_instance_nr</span></code>) 3 on LPAR ibmaixserver01.mycorp.com</p>
 <p>ibmaixserver01.mycorp.com has been defined in the inventory file as shown in the <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"><span class="std std-ref">configuration documentation</span></a>.</p>
 <p>You have created the following file stop_sap.yml</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibmaix_servers</span><span class="w"></span>
 <span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">stopsap_input_sap_sid</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PRD&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">stopsap_input_sap_instance_nr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
 <span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ansible_dir&gt;/roles/stop_sap</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Run the Stop of SAP System PRD by:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose stop_sap.yml -t sap_stop_instance</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose stop_sap.yml -t sap_stop_instances</span><span class="w"></span>
 </pre></div>
 </div>
+<p><strong>Remark</strong></p>
+<p>The current version does not accept SAP instance numbers with a leading ‘0’. So, ‘3’ is valid but ‘03’ is not.</p>
 </section>
 <section id="license">
 <h2><a class="toc-backref" href="#id17">License</a><a class="headerlink" href="#license" title="Permalink to this headline"></a></h2>
@@ -274,7 +280,7 @@ or for all SAP systems that are configured in file /usr/sap/sapservices when var
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="stop_db.html" class="btn btn-neutral float-left" title="Role stop_db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="upgrade_sap_kernel.html" class="btn btn-neutral float-right" title="Role upgrade_sap_kernel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="upgrade_sap_HANA_client.html" class="btn btn-neutral float-right" title="Role upgrade_sap_HANA_client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -50,7 +50,7 @@ Variables
 +--------------------------------------+------------------------------------------------------------------------------+----------+
 | ``startsap_input_sap_sid``           | SAP system ID                                                                | Yes [2]_ |
 +--------------------------------------+------------------------------------------------------------------------------+----------+
-| ``startsap_input_sap_instance_nr``   | SAP instance number                                                          | No [3]_  |
+| ``startsap_input_sap_instance_nr``   | SAP instance number (without leading zero in case of a single-digit number)  | No [3]_  |
 +--------------------------------------+------------------------------------------------------------------------------+----------+
 | ``startsap_input_waitforstarted``    | Timeout in seconds when waiting for instance to be completely started        | Yes [1]_ |
 +--------------------------------------+------------------------------------------------------------------------------+----------+
@@ -83,30 +83,24 @@ None.
 Example Playbook
 ----------------
 
-You plan to start a SAP system with SAP SID (``startsap_input_sap_sid``) PRD and instance number  (````startsap_input_sap_instance_nr````) 3 on LPAR ibmaixserver01.mycorp.com
+The example playbook is used to start all instances of an SAP system with the SAP system ID (SID) PRD. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The ASCS instance is installed on host ibmaixserver01.mycorp.com, and the SAP start services for SAP system PRD are active on all hosts that have instances for SAP system PRD. The example playbook in the current directory is named start_sap.yml and has the following contents:
 
-ibmaixserver01.mycorp.com has been defined in the inventory file as shown in the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>`.
+.. code:: YAML
 
-You have created the following file start_sap.yml
+     - hosts: ibmaixserver01.mycorp.com
+       vars:
+       - startsap_input_sap_sid: "PRD"
+       roles:
+       - role: <ansible_dir>/roles/start_sap
 
-.. code:: yaml
+To execute this playbook, enter the command:
 
-       - hosts: ibmaix_servers
-         vars:
-         - startsap_input_sap_sid: "PRD"
-         - startsap_input_sap_instance_nr: 3 
-         roles:
-         - role: <ansible_dir>/roles/start_sap
+.. code:: YAML
 
-Run the Start of SAP System PRD by:
+   ansible-playbook --verbose start_sap.yml -t sap_start_instances
 
-.. code:: yaml
+Note: When using the role start_sap with tag ``-t sap_start_instances`` to start instances of an SAP system on several hosts, you only need to execute the role on one host, typically the host that holds the central services instance. When using the role start_sap with tag ``-t sap_start_services`` to start the SAP start services, you must execute it on all hosts that hold SAP instances for the specified SAP system.
 
-   ansible-playbook --verbose start_sap.yml  -t sap_start_instances
-
-**Remark**
-
-The current version does not accept SAP instance numbers with a leading '0'. So, '3' is valid but '03' is not.
 
 License
 -------

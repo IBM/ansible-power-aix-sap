@@ -1,0 +1,27 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# tasks file for upgrade_ibm_db2_client
+
+- name: Tags check
+  fail:
+    msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role upgrade_ibm_db2_client: upgrade_ibm_db2_client"
+  when: (not 'upgrade_ibm_db2_client' in ansible_run_tags) and (not 'all' in ansible_run_tags)
+  tags: always
+
+# Upgrade DB2 Client
+- name: Upgrade DB2 Client
+  import_tasks: upgrade_ibm_db2_client.yml
+  tags: upgrade_ibm_db2_client

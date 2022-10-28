@@ -35,8 +35,8 @@
   import_tasks: sap_start_instances.yml
   tags: sap_start_instances
   
-# start All System
-- name: Start All System
+# start All Systems
+- name: Start All Systems
   import_tasks: sap_start_all_systems.yml
   tags: never,sap_start_all_systems
 

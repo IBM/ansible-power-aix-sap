@@ -3,7 +3,7 @@
 Role upgrade_sap_kernel
 =======================
 
-The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center (`SWDC <https://support.sap.com/swdc>`_) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable ``upgsapkrn_dir_download_sar_controlnode``.
+The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center (`SWDC <https://support.sap.com/swdc>`_) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable ``upgsapkrn_dir_download_sar_managednode``.
 
 The role upgrade_sap_kernel needs the SAP System ID as input in variable ``upgsapkrn_input_sap_sid``, ``upgsapkrn_input_sap_adm`` and ``upgsapkrn_input_sap_sys``.
 
@@ -41,9 +41,9 @@ Variables
 +-----------------------------------------------+---------------------------------------------------------------------+---------------+
 | ``upgsapkrn_input_sap_sys``                   | SAP system group ID                                                 | Yes [1]_      |
 +-----------------------------------------------+---------------------------------------------------------------------+---------------+
-| ``upgsapkrn_dir_download_sar_controlnode``    | Directory path on the Ansible host where SAR file is located.       | Yes [1]_ [2]_ |
+| ``upgsapkrn_dir_download_sar_managednode``    | Directory path on the Ansible host where SAR file is located.       | Yes [1]_ [2]_ |
 +-----------------------------------------------+---------------------------------------------------------------------+---------------+
-| ``upgsapkrn_dir_download_sapcar_controlnode`` | Directory path on the Ansible host where SAPCAR file is located.    | Yes [1]_ [3]_ |
+| ``upgsapkrn_dir_download_sapcar_managednode`` | Directory path on the Ansible host where SAPCAR file is located.    | Yes [1]_ [3]_ |
 +-----------------------------------------------+---------------------------------------------------------------------+---------------+
 | ``upgsapkrn_dir_sapcar_default_managednode``  | Fallback directory on the target host where SAPCAR is searched.     | Yes [1]_      |
 +-----------------------------------------------+---------------------------------------------------------------------+---------------+
@@ -62,8 +62,8 @@ Remarks:
 ^^^^^^^^
 
 .. [1] Default provided.
-.. [2] At least one sar file is required in ``upgsapkrn_dir_download_sar_controlnode`` matching the pattern "\*.SAR" or "\*.sar".
-.. [3] When ``upgsapkrn_dir_download_sapcar_controlnode`` is undefined, SAPCAR will be searched in ``upgsapkrn_dir_download_sar_controlnode`` and ``upgsapkrn_dir_sapcar_default_managednode``.
+.. [2] At least one sar file is required in ``upgsapkrn_dir_download_sar_managednode`` matching the pattern "\*.SAR" or "\*.sar".
+.. [3] When ``upgsapkrn_dir_download_sapcar_managednode`` is undefined, SAPCAR will be searched in ``upgsapkrn_dir_download_sar_managednode`` and ``upgsapkrn_dir_sapcar_default_managednode``.
 
 Defaults
 --------
@@ -77,9 +77,9 @@ Suggested default values are provided in defaults/main.yml:
 +-----------------------------------------------+-----------------------------------------------------------------------+
 | ``upgsapkrn_input_sap_sys``                   | ``"sapsys"``                                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------+
-| ``upgsapkrn_dir_download_sar_controlnode``    | ``"/tmp/sar_prov_dir"``                                               |
+| ``upgsapkrn_dir_download_sar_managednode``    | ``"/tmp/sar_prov_dir"``                                               |
 +-----------------------------------------------+-----------------------------------------------------------------------+
-| ``upgsapkrn_dir_download_sapcar_controlnode`` | ``"/tmp/sapcar_prov_dir"``                                            |
+| ``upgsapkrn_dir_download_sapcar_managednode`` | ``"/tmp/sapcar_prov_dir"``                                            |
 +-----------------------------------------------+-----------------------------------------------------------------------+
 | ``upgsapkrn_dir_sapcar_default_managednode``  | ``"/usr/sap/hostctrl/exe"``                                           |
 +-----------------------------------------------+-----------------------------------------------------------------------+
@@ -102,26 +102,26 @@ None.
 Example Playbook
 ----------------
 
-You are running a SAP instance on LPARs defined by ibmaix_servers with SAP SID  (upgsapkrn_input_sap_sid) PRD.
-You plan to upgrade a SAP system kernel on these LPARs.
-
-ibmaix_servers has been defined in the inventory file as shown in the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>`.
-
-You have created the following file upgrade_sap_kernel.yml
+The example playbook is used to replace the existing kernel of SAP system PRD with a new stack kernel on several hosts. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The necessary archives and the SAPCAR tool must have been downloaded from the SAP Software Distribution Center and stored in the NFS share mounted on /mnt/a. The files will be copied into directory /usr/sap/tmp/sar_upload_dir (default value for variable ``upgsapkrn_dir_upload_managednode``). The playbook is located in the current directory, named MYupgrade_sap_kernel.yml and has the following contents:
 
 .. code:: yaml
 
        - hosts: ibmaix_servers
          vars:
-         - upgsapkrn_input_sap_sid: "PRD"
+         - upgsapkrn_input_sap_sid: PRD
+         - upgsapkrn_dir_download_sar_managednode: /mnt/a
+         - upgsapkrn_dir_download_sapcar_managednode: /mnt/a
+         - ansible_become_method: su
          roles:
-         - role: <ansible_dir>/roles/upgrade_sap_kernel
+         - role: upgrade_sap_kernel
 
-Run the Upgrade of SAP System PRD by:
+Note: By specifying variable ``ansible_become_user: su``, you select a method that is available on any AIX server. The default value would be ``sudo``, which may or may not be available on your server (see `Ansible User Guide: Understanding privilege escalation: become <https://docs.ansible.com/ansible/latest/user_guide/become.html>`_). If you want to use RBAC, you must specify ``ansible_become_method: swrole``.
+
+To execute this playbook, enter the command:
 
 .. code:: yaml
 
-   ansible-playbook --verbose upgrade_sap_kernel.yml
+   ansible-playbook -i my_inventory.yaml MYupgrade_sap_kernel.yml
 
 License
 -------

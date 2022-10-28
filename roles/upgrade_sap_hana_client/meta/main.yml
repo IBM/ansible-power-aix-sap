@@ -1,6 +1,6 @@
 galaxy_info:
-  author: Heidi Eissler
-  description: Installing or upgrading the SAP Host Agent
+  author: Csaba Fuchs
+  description: Upgrade the client software for an SAP HANA database
   company: IBM Corporation
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -61,4 +61,4 @@ galaxy_info:
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
   # if you add dependencies to this list.
-  
+

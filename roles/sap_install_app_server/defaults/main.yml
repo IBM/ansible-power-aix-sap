@@ -16,9 +16,10 @@
 # defaults file for sap_install_app_server
 insappsvr_input_install_mode: "reuseInifile"
 insappsvr_input_swpm_version: "SWPM20"
-insappsvr_logfile_path: "/tmp/Ansible/SWPM"
 uninsappsvr_input_swpm_version: "SWPM20"
+insappsvr_logfile_path: "/tmp/Ansible/SWPM"
 insappsvr_input_SAPDBType: "HDB"
+insappsvr_input_db6_install_AAS_on_DBHost: "false"
 
 # The following defaults are placeholders for the generation of the file inifile.param.
 # See the role documentation for examples how to set these parameter.
@@ -35,6 +36,11 @@ insappsvr_input_instkey: " "
 insappsvr_input_HDB_Schema_schemaName: " "
 insappsvr_input_HDB_Schema_schemaPassword: " "
 insappsvr_input_HDB_getDBInfo_instanceNumber: " "
+insappsvr_input_db6_abap_connect_user: " "
+insappsvr_input_db6_abap_schema: " "
+insappsvr_input_nwUsers_db6_db2sidPassword: " "
+insappsvr_input_nwUsers_db6_sapsidPassword: " "
+insappsvr_input_nwUsers_sidadmPassword: " "
 insappsvr_input_dir_hdbclient_managednode: " "
 insappsvr_input_dir_downloadbasket_managednode: " "
 uninsappsvr_input_sap_sid: " "

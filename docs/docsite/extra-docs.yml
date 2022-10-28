@@ -12,6 +12,7 @@ sections:
       - start_sap
       - stop_db
       - stop_sap
+      - upgrade_ibm_db2_client
       - upgrade_sap_hana_client
       - upgrade_sap_kernel
       - AIX_RBAC_for_Ansible

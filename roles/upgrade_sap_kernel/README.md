@@ -1,6 +1,6 @@
 # Role upgrade_sap_kernel
 
-The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center ([SWDC](https://support.sap.com/swdc)) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable `upgsapkrn_dir_download_sar_controlnode`.
+The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center ([SWDC](https://support.sap.com/swdc)) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable `upgsapkrn_dir_download_sar_managednode`.
 
 The role upgrade_sap_kernel needs the SAP System ID as input in variable `upgsapkrn_input_sap_sid`, `upgsapkrn_input_sap_adm` and `upgsapkrn_input_sap_sys`.
 

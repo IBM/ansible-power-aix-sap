@@ -1,0 +1,73 @@
+---
+#   Copyright 2022 IBM Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# tasks file for upgrade_ibm_db2_client
+
+##########################################
+# Check that he specified user exist
+##########################################
+- name: Validate user "{{ upgdb2_sid|lower }}adm"
+  shell: "id {{ upgdb2_sid|lower }}adm | grep -v grep | cat"
+  register: check_user_existence
+
+- name: Error if "{{ upgdb2_sid|lower }}adm" does not exist
+  fail:
+    msg: "Error: User: {{ upgdb2_sid|lower }}adm does not exist."
+  when: check_user_existence.stderr_lines|length > 0
+
+# Check for the existence of {{ upgdb2_mount_dir }}/DATA_UNITS/CLIENT
+- name: "Check if {{ upgdb2_mount_dir }}/DATA_UNITS/CLIENT exists"
+  stat:
+    path: "{{ upgdb2_mount_dir }}/DATA_UNITS/CLIENT"
+  register: upgdb2_dir_exist
+
+- name: "Check for correct mount Path."
+  fail:
+    msg: Error {{ upgdb2_mount_dir }}/DATA_UNITS/CLIENT does not exist."
+  when: not upgdb2_dir_exist.stat.exists
+
+- name: "Update DB2 Client"
+  ignore_errors: yes
+  shell: "db6_update_client.sh -u"
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "{{ upgdb2_sid|lower }}adm"
+  args:
+    chdir: "{{ upgdb2_mount_dir }}/DATA_UNITS/CLIENT"
+  when: upgdb2_java_only != "yes"
+  register: update_db2_client_output
+
+- name: Display command output
+  debug:
+    msg: "{{ update_db2_client_output }}"
+  when: upgdb2_java_only != "yes"
+
+- name: "Update DB2 Client - JAVA only System"
+  ignore_errors: yes
+  shell: "db6_update_client.sh -j"
+  become: yes
+  become_method: su
+  become_flags: '-'
+  become_user: "{{ upgdb2_sid|lower }}adm"
+  args:
+    chdir: "{{ upgdb2_mount_dir }}/DATA_UNITS/CLIENT"
+  when: upgdb2_java_only == "yes"
+  register: update_db2_client_output
+
+- name: Display command output
+  debug:
+    msg: "{{ update_db2_client_output }}"
+  when: upgdb2_java_only == "yes"

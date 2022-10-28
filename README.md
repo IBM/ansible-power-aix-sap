@@ -33,14 +33,15 @@ Remark: All the packages can be downloaded from:
 
 The following roles for administrator tasks with SAP on IBM AIX are provided:
 
-- Installing or upgrading the SAP Host Agent
-- Installing additional application servers for an SAP HANA database
+- Install or upgrade the SAP Host Agent
+- Install additional application servers for SAP HANA or IBM Db2 LUW databases
 - Check basic operating system settings
 - Save the SAP work directories
 - Start database instances for IBM Db2, SAP HANA, and Oracle databases
-- Start SAP instances
+- Start SAP instances or SAP start services
 - Stop database instances for IBM Db2, SAP HANA, and Oracle databases
-- Stop SAP instances
+- Stop SAP instances or SAP start services
+- Upgrade the database client software for an IBM Db2 LUW database
 - Upgrade the database client software for an SAP HANA database
 - Upgrade the SAP kernel
 

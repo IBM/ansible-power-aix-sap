@@ -1,6 +1,6 @@
 # Role sap_opsyscheck
 
-The role sap_opsyscheck is checking some basic operating system settings that are required to run SAP applications on the operating system AIX smoothly. It can be executed prior to the first SAP installation on a new system or partition with the operating system AIX or as a "health check" on systems or partitions where SAP is already installed. The following checks will be performed:
+The role sap_opsyscheck is checking some basic operating system settings that are required to run SAP applications on the operating system IBM AIX smoothly. It can be executed prior to the first SAP installation on a new system or partition with the operating system IBM AIX or as a "health check" on systems or partitions where SAP is already installed. The following checks will be performed:
 
 - Check if the nimsh service is running (nimsh is using port 3901, which is used very often in a SAP installation).
 - Check directories /usr/sap, /sapmnt, /tmp, /var, ... for available free space.

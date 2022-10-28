@@ -36,7 +36,7 @@
     msg: "Error: Input parameter save_work_dir_input_save_fn is required."
   when: (save_work_dir_input_save_fn is not defined) or (save_work_dir_input_save_fn is none)
 
-- name: Save of working director starts. core files and softlink to executables are not saved.
+- name: Save of working directory starts. core files are not saved.
   debug:
     msg: "SAP working directory {{save_work_dir_input_dirname}} will be saved to: {{save_work_dir_input_save_dir}}/{{save_work_dir_input_save_fn}}.<timestamp>.tar.Z"
 

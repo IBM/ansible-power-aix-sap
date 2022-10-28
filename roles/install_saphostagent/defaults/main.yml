@@ -19,10 +19,7 @@
 insshagnt_dir_temp_managednode: "/tmp/hostctrl"
 
 # Directory path on the Ansible host where SAR file is located
-insshagnt_dir_download_controlnode: "/tmp/downloads"
-
-# Directory path on the Ansible host where SAPCAR is located
-insshagnt_dir_download_sapcar_controlnode: "/tmp/sapcar"
+insshagnt_dir_download_managednode: "/tmp/downloads"
 
 # Directory on the target host where SAPCAR is searched by default
 insshagnt_dir_sapcar_default_managednode: "/usr/sap/hostctrl/exe"

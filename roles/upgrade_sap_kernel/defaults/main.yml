@@ -26,7 +26,7 @@ upgsapkrn_input_sap_sys: "sapsys"
 # Directories to search for SAR files on the control node
 #############################################################
 # Directory path on the control node where SAR file is located
-upgsapkrn_dir_download_sar_controlnode: "/tmp/sar_prov_dir"
+upgsapkrn_dir_download_sar_managednode: "/tmp/sar_prov_dir"
 
 
 ####################################################################
@@ -36,7 +36,7 @@ upgsapkrn_dir_download_sar_controlnode: "/tmp/sar_prov_dir"
 upgsapkrn_file_sapcar: "SAPCAR"
 
 # Directory path on the control node where SAPCAR is located
-upgsapkrn_dir_download_sapcar_controlnode: "/tmp/sapcar_prov_dir"
+upgsapkrn_dir_download_sapcar_managednode: "/tmp/sapcar_prov_dir"
 
 # Directory path on the managed node where SAPCAR is located
 upgsapkrn_dir_sapcar_default_managednode: "/usr/sap/hostctrl/exe"

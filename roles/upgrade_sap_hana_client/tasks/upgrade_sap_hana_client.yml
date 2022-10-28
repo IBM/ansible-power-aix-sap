@@ -122,7 +122,7 @@
 
   # Extract the HDB Client into a temporary working directory
 - name: "Extract HANA Client SAR file into a "
-  shell: "cd {{upgtemp_working_dir_managednode}};{{upglocation_of_SAPCAR_utility_managednode}}//{{upgsapcar_file_name}} -xvf {{upglocation_of_HANA_Client_SAR_managednode}}//{{upgfile_name_of_HANA_client_SAR_file}}" 
+  shell: "cd {{upgtemp_working_dir_managednode}};{{upglocation_of_SAPCAR_utility_managednode}}//{{upgsapcar_file_name}} -xvf {{upglocation_of_HANA_Client_SAR_managednode}}//{{upgfile_name_of_HANA_client_SAR_file}}"
   become_user: "{{upgowner_of_client_dir|lower}}"
   register: save_work_dir_output
 

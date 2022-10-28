@@ -17,111 +17,245 @@
 # tasks file for sap_opsyscheck_dir_mounted_managed_node free space check
 ############################################################################
 
+
 - name: Set variable for mounts
   set_fact:
     sap_opsyscheck_mounts_managed_node: "{{ ansible_mounts | map(attribute='mount') | list}}"
 
-- name: Error if no /usr/sap found
+
+
+###
+### Check that /usr/sap has at least 10 GB free disk space
+###
+- name: Warning if /usr/sap is not a separate file system
   debug:
-    msg: "ERROR: No /usr/sap file system found"
+    msg: "WARNING: /usr/sap is not a separate file system"
   when: "'/usr/sap' not in sap_opsyscheck_mounts_managed_node"
 
-- name: Error if no /sapmnt found
+- name: Get status of /usr/sap
+  stat:
+    path: "/usr/sap"
+    follow: "yes"
+  register: sap_opsyscheck_stat_data_usr_sap
+
+- name: Set flag if /usr/sap exists, is a directory and is readable
+  set_fact:
+    sap_opsyscheck_dir_exists_usr_sap: "{{ sap_opsyscheck_stat_data_usr_sap.stat.exists  and  sap_opsyscheck_stat_data_usr_sap.stat.isdir  and  sap_opsyscheck_stat_data_usr_sap.stat.readable }}"
+
+- name: Print warning if /usr/sap does not exist or is not a directory or is not readable
   debug:
-    msg: "ERROR: No /sapmnt file system found"
+    msg: "WARNING: '/usr/sap' either does not exist or is not a directory or not readable"
+  when: not sap_opsyscheck_dir_exists_usr_sap|bool
+
+- name: Determine free disk space for /usr/sap
+  shell: "cd /usr/sap && df -m . | grep '/' | awk '{ print $3}'"
+  register: sap_opsyscheck_tmp_MB_free_output
+  when: sap_opsyscheck_dir_exists_usr_sap|bool
+
+- name: Set integer variable for MBytes free
+  set_fact:
+    sap_opsyscheck_MB_free_in_usr_sap: "{{ sap_opsyscheck_tmp_MB_free_output.stdout | int }}"
+  when: sap_opsyscheck_dir_exists_usr_sap|bool
+
+
+
+###
+### Check that /sapmnt  has at least  5 GB free disk space
+###
+- name: Warning if /sapmnt is not a separate file system
+  debug:
+    msg: "WARNING: /sapmnt is not a separate file system"
   when: "'/sapmnt' not in sap_opsyscheck_mounts_managed_node"
 
-- name: Error if no /db2 found
+- name: Get status of /sapmnt
+  stat:
+    path: "/sapmnt"
+    follow: "yes"
+  register: sap_opsyscheck_stat_data_sapmnt
+
+- name: Set flag if /sapmnt exists, is a directory and is readable
+  set_fact:
+    sap_opsyscheck_dir_exists_sapmnt: "{{ sap_opsyscheck_stat_data_sapmnt.stat.exists  and  sap_opsyscheck_stat_data_sapmnt.stat.isdir  and  sap_opsyscheck_stat_data_sapmnt.stat.readable }}"
+
+- name: Print warning if /sapmnt does not exist or is not a directory or is not readable
   debug:
-    msg: "ERROR: No /db2 file system found"
+    msg: "WARNING: '/sapmnt' either does not exist or is not a directory or not readable"
+  when: not sap_opsyscheck_dir_exists_sapmnt|bool
+
+- name: Determine free disk space for /sapmnt
+  shell: "cd /sapmnt && df -m . | grep '/' | awk '{ print $3}'"
+  register: sap_opsyscheck_tmp_MB_free_output
+  when: sap_opsyscheck_dir_exists_sapmnt|bool
+
+- name: Set integer variable for MBytes free
+  set_fact:
+    sap_opsyscheck_MB_free_in_sapmnt: "{{ sap_opsyscheck_tmp_MB_free_output.stdout | int }}"
+  when: sap_opsyscheck_dir_exists_sapmnt|bool
+
+
+
+###
+### Check that /db2     has at least 50 GB free disk space
+###
+- name: Warning if /db2 is not a separate file system
+  debug:
+    msg: "WARNING: /db2 is not a separate file system"
   when: "'/db2' not in sap_opsyscheck_mounts_managed_node"
 
-- name: Error if no /tmp found
+- name: Get status of /db2
+  stat:
+    path: "/db2"
+    follow: "yes"
+  register: sap_opsyscheck_stat_data_db2
+
+- name: Set flag if /db2 exists, is a directory and is readable
+  set_fact:
+    sap_opsyscheck_dir_exists_db2: "{{ sap_opsyscheck_stat_data_db2.stat.exists  and  sap_opsyscheck_stat_data_db2.stat.isdir  and  sap_opsyscheck_stat_data_db2.stat.readable }}"
+
+- name: Print warning if /db2 does not exist or is not a directory or is not readable
   debug:
-    msg: "ERROR: No /tmp file system found"
+    msg: "WARNING: '/db2' either does not exist or is not a directory or not readable"
+  when: not sap_opsyscheck_dir_exists_db2|bool
+
+- name: Determine free disk space for /db2
+  shell: "cd /db2 && df -m . | grep '/' | awk '{ print $3}'"
+  register: sap_opsyscheck_tmp_MB_free_output
+  when: sap_opsyscheck_dir_exists_db2|bool
+
+- name: Set integer variable for MBytes free
+  set_fact:
+    sap_opsyscheck_MB_free_in_db2: "{{ sap_opsyscheck_tmp_MB_free_output.stdout | int }}"
+  when: sap_opsyscheck_dir_exists_db2|bool
+
+
+
+###
+### Check that /tmp     has at least  2 GB free disk space
+###
+- name: Warning if /tmp is not a separate file system
+  debug:
+    msg: "WARNING: /tmp is not a separate file system"
   when: "'/tmp' not in sap_opsyscheck_mounts_managed_node"
 
-- name: Error if no /var found
+- name: Get status of /tmp
+  stat:
+    path: "/tmp"
+    follow: "yes"
+  register: sap_opsyscheck_stat_data_tmp
+
+- name: Set flag if /tmp exists, is a directory and is readable
+  set_fact:
+    sap_opsyscheck_dir_exists_tmp: "{{ sap_opsyscheck_stat_data_tmp.stat.exists  and  sap_opsyscheck_stat_data_tmp.stat.isdir  and  sap_opsyscheck_stat_data_tmp.stat.readable }}"
+
+- name: Print warning if /tmp does not exist or is not a directory or is not readable
   debug:
-    msg: "ERROR: No /var file system found"
+    msg: "WARNING: '/tmp' either does not exist or is not a directory or not readable"
+  when: not sap_opsyscheck_dir_exists_tmp|bool
+
+- name: Determine free disk space for /tmp
+  shell: "cd /tmp && df -m . | grep '/' | awk '{ print $3}'"
+  register: sap_opsyscheck_tmp_MB_free_output
+  when: sap_opsyscheck_dir_exists_tmp|bool
+
+- name: Set integer variable for MBytes free
+  set_fact:
+    sap_opsyscheck_MB_free_in_tmp: "{{ sap_opsyscheck_tmp_MB_free_output.stdout | int }}"
+  when: sap_opsyscheck_dir_exists_tmp|bool
+
+
+
+###
+### Check that /var     has at least  3 GB free disk space
+###
+- name: Warning if /var is not a separate file system
+  debug:
+    msg: "WARNING: /var is not a separate file system"
   when: "'/var' not in sap_opsyscheck_mounts_managed_node"
 
-- name: Set variable for checking /usr/sap
+- name: Get status of /var
+  stat:
+    path: "/var"
+    follow: "yes"
+  register: sap_opsyscheck_stat_data_var
+
+- name: Set flag if /var exists, is a directory and is readable
   set_fact:
-    sap_opsyscheck_usr_sap_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/usr/sap') | list | first }}"
-  when: "'/usr/sap' in sap_opsyscheck_mounts_managed_node"
+    sap_opsyscheck_dir_exists_var: "{{ sap_opsyscheck_stat_data_var.stat.exists  and  sap_opsyscheck_stat_data_var.stat.isdir  and  sap_opsyscheck_stat_data_var.stat.readable }}"
 
-- name: Set variable for checking /sapmnt
+- name: Print warning if /var does not exist or is not a directory or is not readable
+  debug:
+    msg: "WARNING: '/var' either does not exist or is not a directory or not readable"
+  when: not sap_opsyscheck_dir_exists_var|bool
+
+- name: Determine free disk space for /var
+  shell: "cd /var && df -m . | grep '/' | awk '{ print $3}'"
+  register: sap_opsyscheck_tmp_MB_free_output
+  when: sap_opsyscheck_dir_exists_var|bool
+
+- name: Set integer variable for MBytes free
   set_fact:
-    sap_opsyscheck_sapmnt_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/sapmnt') | list | first }}"
-  when: "'/sapmnt' in sap_opsyscheck_mounts_managed_node"
+    sap_opsyscheck_MB_free_in_var: "{{ sap_opsyscheck_tmp_MB_free_output.stdout | int }}"
+  when: sap_opsyscheck_dir_exists_var|bool
 
-- name: Set variable for checking /db2
-  set_fact:
-    sap_opsyscheck_db2_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/db2') | list | first }}"
-  when: "'/db2' in sap_opsyscheck_mounts_managed_node"
 
-- name: Set variable for checking /tmp
-  set_fact:
-    sap_opsyscheck_tmp_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/tmp') | list | first }}"
-  when: "'/tmp' in sap_opsyscheck_mounts_managed_node"
 
-- name: Set variable for checking /var
-  set_fact:
-    sap_opsyscheck_var_mounted_managed_node:  "{{ ansible_mounts | selectattr('mount','equalto','/var') | list | first }}"
-  when: "'/var' in sap_opsyscheck_mounts_managed_node"
+###
+### The reporting section
+###
 
-- name: Check free space in GB on /usr/sap
+- name: Report free disk space for /usr/sap (in GB)
   debug:
-    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_usr_sap_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /usr/sap"
-  when: "'/usr/sap' in sap_opsyscheck_mounts_managed_node"
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_MB_free_in_usr_sap|int/1024) }} GB available in /usr/sap"
+  when: sap_opsyscheck_dir_exists_usr_sap|bool
 
-- name: Check free space in GB on /sapmnt
+- name: Report free disk space for /sapmnt (in GB)
   debug:
-    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_sapmnt_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /sapmnt"
-  when: "'/sapmnt' in sap_opsyscheck_mounts_managed_node"
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_MB_free_in_sapmnt|int/1024) }} GB available in /sapmnt"
+  when: sap_opsyscheck_dir_exists_sapmnt|bool
 
-- name: Check free space in GB on /db2
+- name: Report free disk space for /db2 (in GB)
   debug:
-    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_db2_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /db2"
-  when: "'/db2' in sap_opsyscheck_mounts_managed_node"
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_MB_free_in_db2|int/1024) }} GB available in /db2"
+  when: sap_opsyscheck_dir_exists_db2|bool
 
-- name: Check free space in GB on /tmp
+- name: Report free disk space for /tmp (in GB)
   debug:
-    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_tmp_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /tmp"
-  when: "'/tmp' in sap_opsyscheck_mounts_managed_node"
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_MB_free_in_tmp|int/1024) }} GB available in /tmp"
+  when: sap_opsyscheck_dir_exists_tmp|bool
 
-- name: Check free space in GB on /var
+- name: Report free disk space for /var (in GB)
   debug:
-    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_var_mounted_managed_node.size_available/1024/1024/1024) }} GB are available on /var"
-  when: "'/var' in sap_opsyscheck_mounts_managed_node"
+    msg: "{{ '{:0.2f}'.format(sap_opsyscheck_MB_free_in_var|int/1024) }} GB available in /var"
+  when: sap_opsyscheck_dir_exists_var|bool
 
-- name: Check /usr/sap for 10 GB free space
+
+
+###
+### The check section
+###
+
+- name: Check that /usr/sap has at least 10 GB free disk space
   debug:
-    msg: "ERROR: On /usr/sap less than 10 GB free space is available."
-  when: "sap_opsyscheck_usr_sap_mounted_managed_node.size_available/1024/1024/1024 < 10"
+    msg: "ERROR: Less than 10 GB free disk space in directory /usr/sap"
+  when: "sap_opsyscheck_dir_exists_usr_sap|bool and sap_opsyscheck_MB_free_in_usr_sap|int < 10*1024"
 
-- name: Check /sapmnt for 5 GB free space
+- name: Check that /sapmnt has at least 5 GB free disk space
   debug:
-    msg: "ERROR: On /sapmnt less than 5 GB free space is available."
-  when: "sap_opsyscheck_sapmnt_mounted_managed_node.size_available/1024/1024/1024 < 5"
+    msg: "ERROR: Less than 5 GB free disk space in directory /sapmnt"
+  when: "sap_opsyscheck_dir_exists_sapmnt|bool and sap_opsyscheck_MB_free_in_sapmnt|int < 5*1024"
 
-- name: Check /db2 for 50 GB free space
+- name: Check that /db2 has at least 50 GB free disk space
   debug:
-    msg: "ERROR: On /db2 less than 50 GB free space is available."
-  when: "sap_opsyscheck_db2_mounted_managed_node.size_available/1024/1024/1024 < 50"
+    msg: "ERROR: Less than 50 GB free disk space in directory /db2"
+  when: "sap_opsyscheck_dir_exists_db2|bool and sap_opsyscheck_MB_free_in_db2|int < 50*1024"
 
-- name: Check /tmp for 2 GB free space
+- name: Check that /tmp has at least 2 GB free disk space
   debug:
-    msg: "ERROR: On /tmp less than 2 GB free space is available."
-  when: "sap_opsyscheck_tmp_mounted_managed_node.size_available/1024/1024/1024 < 2"
+    msg: "ERROR: Less than 2 GB free disk space in directory /tmp"
+  when: "sap_opsyscheck_dir_exists_tmp|bool and sap_opsyscheck_MB_free_in_tmp|int < 2*1024"
 
-- name: Check /var for 3 GB free space
+- name: Check that /var has at least 3 GB free disk space
   debug:
-    msg: "ERROR: On /var less than 3 GB free space is available."
-  when: "sap_opsyscheck_var_mounted_managed_node.size_available/1024/1024/1024 < 3"
+    msg: "ERROR: Less than 3 GB free disk space in directory /var"
+  when: "sap_opsyscheck_dir_exists_var|bool and sap_opsyscheck_MB_free_in_var|int < 3*1024"
 
-  #- name: Check /usr/sap for 10 GB free space
-  #  assert:
-  #    that: sap_opsyscheck_dir_mounted_managed_node.size_available/1024/1024/1024 > 2
-  #    msg: "Error: On /usr/sap no 10 GB free space is available. For a SAP kernel upgrade 10 GB free space are recommended."

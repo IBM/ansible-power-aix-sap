@@ -18,10 +18,8 @@
 ###########################################
 
 - name: Check running nim service
-  shell:  ps -elf | grep -i nimsh | grep -v grep
+  shell:  ps -elf | grep -i nimsh | grep -v grep | cat
   register: sap_nim_service_check_output
-  failed_when: sap_nim_service_check_output.rc == 0
-  ignore_errors: true
 
 - name: Warning if nim service is running
   debug:

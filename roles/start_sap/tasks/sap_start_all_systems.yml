@@ -28,7 +28,7 @@
 - name: Set variable for start command
   set_fact:
     startsap_cmd_sap_services: "{{ startsap_list_sap_services.stdout_lines }}"
- 
+
 - name: Error if sap instances or sapstartsrv was not found in /usr/sap/sapservices
   fail:
     msg: "Error: SAP instances does not exist or sapstartsrv was not found."
@@ -45,52 +45,52 @@
 
 - name: Set variable
   set_fact:
-    startsap_list_sap_services_output: "{{ item }}"
+    startsap_list_sap_services_output: "{{ item.stdout_lines }}"
   with_items:  "{{ startsap_list_sap_services_output.results }}"
+  register: startsap_list_sap_services_output_tmp
+
+- name: Make a list
+  set_fact:
+    startsap_list_sap_services_output: "{{ startsap_list_sap_services_output_tmp.results | map(attribute='ansible_facts.startsap_list_sap_services_output') | list}}"
 
 ###########################################
 # Get if there is any running service
 ###########################################
 
 - name: Get instance numbers from profile name
-  shell: grep -w 'SAPSYSTEM'  {{ item }}
-  with_items: "{{ startsap_list_sap_services_output.stdout_lines }}"
+  shell: grep -w 'SAPSYSTEM ='  {{ item }}
+  when: item != ""
+  with_items: "{{ startsap_list_sap_services_output }}"
   register: startsap_input_sap_sid_profile
-  
+
 - name: Set variable for start command
   set_fact:
     startsap_cmd_sap_services: "{{ item.stdout_lines | first }}"
+  when: item.changed == True
   with_items: "{{ startsap_input_sap_sid_profile.results }}"
   register: startsap_cmd_prep_sap_services
-  
+
 - name: Make a list
   set_fact:
     startsap_cmd_sap_services: "{{ startsap_cmd_prep_sap_services.results | map(attribute='ansible_facts.startsap_cmd_sap_services') | list }}"
 
-- name: Check if SAP service is active
-  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.split()[2] }} -function GetSystemInstanceList"
-  environment:
-    LIBPATH: "{{ startsap_dir_sapctrl_managednode }}"
-  register: startsap_output_list_inactive_instances
-  with_items: "{{ startsap_cmd_sap_services }}"
-
 - name: Check if SAP instance is active
-  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.split()[2] }} -function GetSystemInstanceList |  grep {{ ansible_hostname }} | grep -i gray | sort -k 5n"
+  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.split()[2] }} -function GetSystemInstanceList |  grep {{ ansible_hostname }} | grep -i gray | sort -k 5n | cat"
   environment:
     LIBPATH: "{{ startsap_dir_sapctrl_managednode }}"
-  failed_when: startsap_output_list_inactive_instances.rc >= 2
   register: startsap_output_list_inactive_instances
   with_items: "{{ startsap_cmd_sap_services }}"
 
 - name: Set variable for start command with inactive instances
   set_fact:
     startsap_cmd_sap_inactive_services: "{{ item.stdout }}"
+  when: item.stdout != ""
   with_items: "{{ startsap_output_list_inactive_instances.results }}"
 
 - name: Error, if SAP instance is not inactive
-  fail:
+  debug:
     msg: "Error: No inactive SAP instances found"
-  failed_when: startsap_cmd_sap_inactive_services == ""
+  when: startsap_cmd_sap_inactive_services == "" or startsap_cmd_sap_inactive_services is undefined
 
 ######################################################
 # Display SAP start commands
@@ -98,17 +98,23 @@
 
 - name: Show start SAP services command
   debug:
-    msg: "SAP start command - {{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.split()[2] }} -function StartSystem ALL"
-  with_items: "{{ startsap_cmd_sap_services }}"
-  
+    msg: "SAP start command - {{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.1.split()[2] }} -function StartSystem ALL"
+  when: item.0.stdout != ""
+  with_together:
+    - "{{ startsap_output_list_inactive_instances.results }}"
+    - "{{ startsap_cmd_sap_services }}"
+
 ######################################################
 # Start SAP Instances
 ######################################################
-  
+
 - name: Start SAP instances
-  command: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.split()[2] }} -function StartSystem ALL"
+  command: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ item.1.split()[2] }} -function StartSystem ALL"
   environment:
     LIBPATH: "{{ startsap_dir_sapctrl_managednode }}"
   args:
     chdir: "{{ startsap_dir_sapctrl_managednode }}"
-  with_items: "{{ startsap_cmd_sap_services }}"
+  when: item.0.stdout != ""
+  with_together:
+    - "{{ startsap_output_list_inactive_instances.results }}"
+    - "{{ startsap_cmd_sap_services }}"

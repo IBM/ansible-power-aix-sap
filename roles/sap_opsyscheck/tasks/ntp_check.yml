@@ -18,9 +18,8 @@
 ############################################################################
 
 - name: Check NTP
-  shell: ps -ef | fgrep xntpd | grep -v grep
+  shell: ps -ef | fgrep xntpd | grep -v grep | cat
   register: sapopsyschk_ntp_check_output
-  failed_when: sapopsyschk_ntp_check_output.rc == 0
 
 - name: Display warning
   debug:

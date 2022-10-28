@@ -60,11 +60,11 @@ None.
 Example Playbook
 ----------------
 
-The example playbook is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named stop_hana_db.yml and has the following contents:
+The example playbook is used to stop instance number 00 of an SAP HANA database with the database system ID PRD on host ibmaixserver01.mycorp.com. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named stop_hana_db.yml and has the following contents:
 
 .. code:: yaml
 
-       - hosts: ibmaix_servers
+       - hosts: ibmaixserver01.mycorp.com
          vars:
          - stopdb_input_db_sid: "PRD"
          - stopdb_input_hdb_instance_number: 00

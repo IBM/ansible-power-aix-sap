@@ -15,6 +15,11 @@
 
 # tasks file for sap_install_app_server
 #
+- name: Error SWPM 2.0 is only available for SAP HANA. {{ insappsvr_input_SAPDBType }} is only supported by SWPM 1.0
+  fail:
+    msg: "ERROR: SWPM 2.0 is only available for SAP HANA. {{ insappsvr_input_SAPDBType }} is only supported by SWPM 1.0. Switch to SWPM 1.0."
+  when: insappsvr_input_SAPDBType == "DB6" and insappsvr_input_swpm_version == "SWPM20"
+
 - name: Create Timestamp for LOG file
   ansible.builtin.set_fact:
     insappsvr_timestamp_for_logfile: "CommandLineOutput_sap_install_app_server_{{ ansible_date_time.iso8601_basic_short }}.log"
@@ -24,6 +29,24 @@
     path: "{{ insappsvr_logfile_path }}"
     state: directory
 
+- name: Create inifile from template DB6
+  ansible.builtin.template:
+    src: inifile.params_install_DB6_distributed.j2
+    dest: "{{ insappsvr_logfile_path }}/inifile.params"
+  when:
+    - insappsvr_input_install_mode == "createInifile"
+    - insappsvr_input_SAPDBType == "DB6"
+    - insappsvr_input_db6_install_AAS_on_DBHost == "false"
+
+- name: Create inifile from template DB6
+  ansible.builtin.template:
+    src: inifile.params_install_DB6_DBHost.j2
+    dest: "{{ insappsvr_logfile_path }}/inifile.params"
+  when:
+    - insappsvr_input_install_mode == "createInifile"
+    - insappsvr_input_SAPDBType == "DB6"
+    - insappsvr_input_db6_install_AAS_on_DBHost == "true"
+  
 - name: Create inifile from template HDB
   ansible.builtin.template:
     src: inifile.params_install_HDB.j2
@@ -167,6 +190,65 @@
   register: insappsvr_initfile_SAPINST_CD_PACKAGE_RDBMS_HDB_CLIENT_check
   when: insappsvr_input_SAPDBType == "HDB" and insappsvr_input_swpm_version == "SWPM10"
 
+- name: Check NW_DB6_DB.db6.abap.connect.user parameter in {{ insappsvr_input_file_inifile }}
+  shell: "grep NW_DB6_DB.db6.abap.connect.user {{ insappsvr_input_file_inifile }} | grep -v '#' | awk '{print $3}'"
+  register: insappsvr_initfile_NW_DB6_DB_db6_abap_connect_user_check
+  when: insappsvr_input_SAPDBType == "DB6"
+
+- name: Error NW_DB6_DB.db6.abap.connect.user is not set
+  fail:
+    msg: "ERROR: NW_DB6_DB.db6.abap.connect.user is not set in {{ insappsvr_input_file_inifile }} - {{ insappsvr_initfile_NW_DB6_DB_db6_abap_connect_user_check.stdout }}"
+  when: insappsvr_input_SAPDBType == "DB6" and insappsvr_initfile_NW_DB6_DB_db6_abap_connect_user_check.stdout == ""
+
+- name: Check NW_DB6_DB.db6.abap.schema parameter in {{ insappsvr_input_file_inifile }}
+  shell: "grep NW_DB6_DB.db6.abap.schema {{ insappsvr_input_file_inifile }} | grep -v '#' | awk '{print $3}'"
+  register: insappsvr_initfile_NW_DB6_DB_db6_abap_schema_check
+  when: insappsvr_input_SAPDBType == "DB6"
+
+- name: Error NW_DB6_DB.db6.abap.schema is not set
+  fail:
+    msg: "ERROR: NW_DB6_DB.db6.abap.schema is not set in {{ insappsvr_input_file_inifile }} - {{ insappsvr_initfile_NW_DB6_DB_db6_abap_schema_check.stdout }}"
+  when: insappsvr_input_SAPDBType == "DB6" and insappsvr_initfile_NW_DB6_DB_db6_abap_schema_check.stdout == ""
+
+- name: Check nwUsers.db6.db2sidPassword parameter in {{ insappsvr_input_file_inifile }}
+  shell: "grep nwUsers.db6.db2sidPassword {{ insappsvr_input_file_inifile }} | grep des25 | cut -d '=' -f2"
+  register: insappsvr_initfile_db6_db2sidPassword_check
+  when: insappsvr_input_SAPDBType == "DB6"
+
+- name: Error nwUsers.db6.db2sidPassword is not set
+  fail:
+    msg: "ERROR: nwUsers.db6.db2sidPassword is not set in {{ insappsvr_input_file_inifile }} - {{ insappsvr_initfile_db6_db2sidPassword_check.stdout }}"
+  when:
+    - insappsvr_input_SAPDBType == "DB6"
+    - insappsvr_input_db6_install_AAS_on_DBHost == "true"
+    - insappsvr_initfile_db6_db2sidPassword_check.stdout == ""
+
+- name: Check nwUsers.db6.sapsidPassword parameter in {{ insappsvr_input_file_inifile }}
+  shell: "grep nwUsers.db6.sapsidPassword {{ insappsvr_input_file_inifile }} | grep des25 | cut -d '=' -f2"
+  register: insappsvr_initfile_db6_sapsidPassword_check
+  when: insappsvr_input_SAPDBType == "DB6"
+
+- name: Error nwUsers.db6.sapsidPassword is not set
+  fail:
+    msg: "ERROR: nwUsers.db6.sapsidPassword is not set in {{ insappsvr_input_file_inifile }} - {{ insappsvr_initfile_db6_sapsidPassword_check.stdout }}"
+  when:
+    - insappsvr_input_SAPDBType == "DB6"
+    - insappsvr_input_db6_install_AAS_on_DBHost == "true"
+    - insappsvr_initfile_db6_sapsidPassword_check.stdout == ""
+
+- name: Check nwUsers.sidadmPassword parameter in {{ insappsvr_input_file_inifile }}
+  shell: "grep nwUsers.sidadmPassword {{ insappsvr_input_file_inifile }} | grep des25 | cut -d '=' -f2"
+  register: insappsvr_initfile_sidadmPassword_check
+  when: insappsvr_input_SAPDBType == "DB6"
+
+- name: Error nwUsers.sidadmPassword is not set
+  fail:
+    msg: "ERROR: nwUsers.sidadmPassword is not set in {{ insappsvr_input_file_inifile }} - {{ insappsvr_initfile_sidadmPassword_check.stdout }}"
+  when:
+    - insappsvr_input_SAPDBType == "DB6"
+    - insappsvr_input_db6_install_AAS_on_DBHost == "true"
+    - insappsvr_initfile_sidadmPassword_check.stdout == ""
+
 - name: Check SAP archives download basket in {{ insappsvr_input_file_inifile }}
   shell: "grep archives.downloadBasket  {{ insappsvr_input_file_inifile }} | grep -v '#' | cut -d '=' -f2"
   register: insappsvr_initfile_downloadbasket
@@ -176,10 +258,10 @@
     path: "{{ insappsvr_initfile_NW_readProfileDir_check.stdout }}"
   register: insappsvr_chk_usr_sap_profile
 
-- name: fail when the profile directory does not exist
+- name: fail when the profile directory {{ insappsvr_initfile_NW_readProfileDir_check.stdout }} does not exist
   fail:
    msg: "ERROR: the profile directory {{ insappsvr_initfile_NW_readProfileDir_check.stdout }} does not exist"
-  when: insappsvr_chk_usr_sap_profile.stat.exists == false
+  when: not insappsvr_chk_usr_sap_profile.stat.exists
 
 - name: Check HANA DB Client in /usr/sap/{{ insappsvr_input_sap_sid }}/hdbclient
   stat:

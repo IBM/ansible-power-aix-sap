@@ -39,13 +39,13 @@ Variables
 +-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
 | Variable                                      | Usage                                                                                                 | Required |
 +===============================================+=======================================================================================================+==========+
-| ``insshagnt_dir_download_controlnode``        | Directory path on the Ansible host where SAR file is located                                          | Yes [1]_ |
-+-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
-| ``insshagnt_dir_download_sapcar_controlnode`` | Directory path on the Ansible host where SAPCAR is located                                            | No [3]_  |
+| ``insshagnt_dir_download_managednode``        | Directory path on the target host where SAR file is located                                           | Yes [1]_ |
 +-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
 | ``insshagnt_input_file_saphostagent_sar``     | Name of the SAR file in the download directory on the target host that contains the SAP Host Agent    | No [2]_  |
 +-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
-| ``insshagnt_dir_sapcar_default_managednode``  | Directory on the target host where SAPCAR is searched                                                 | No [1]_  |
+| ``insshagnt_dir_sapcar_default_managednode``  | Fallback directory on the target host where SAPCAR is searched                                        | No [1]_  |
++-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
+| ``insshagnt_dir_sapcar_managednode``          | Directory path on the target host where SAPCAR is located                                             | No [3]_  |
 +-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
 | ``insshagnt_file_sapcar``                     | Local SAPCAR file name                                                                                | Yes [1]_ |
 +-----------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
@@ -58,8 +58,8 @@ Remarks:
 ^^^^^^^^
 
 .. [1] Default provided.
-.. [2] Defaults to the alphanumerically last filename in ``insshagnt_dir_download_controlnode`` that is matching the pattern "\*.SAR" or "\*.sar".
-.. [3] SAPCAR will be searched in following sequence: ``insshagnt_dir_download_sapcar_controlnode`` and ``insshagnt_dir_download_controlnode`` and ``insshagnt_dir_sapcar_default_managednode``.
+.. [2] Defaults to the alphanumerically last filename in ``insshagnt_dir_download_managednode`` that is matching the pattern "\*.SAR" or "\*.sar".
+.. [3] When ``insshagnt_dir_sapcar_managednode`` is undefined, SAPCAR will be searched in ``insshagnt_dir_download_managednode`` and ``insshagnt_dir_sapcar_default_managednode``.
 
 Defaults
 --------
@@ -69,9 +69,7 @@ Suggested default values are provided in defaults/main.yml:
 +-----------------------------------------------+-----------------------------+
 | Variable                                      | Default                     |
 +===============================================+=============================+
-| ``insshagnt_dir_download_controlnode``        | ``"/tmp/downloads"``        |
-+-----------------------------------------------+-----------------------------+
-| ``insshagnt_dir_download_sapcar_controlnode`` | ``"/tmp/sapcar"``           |
+| ``insshagnt_dir_download_managednode``        | ``"/tmp/downloads"``        |
 +-----------------------------------------------+-----------------------------+
 | ``insshagnt_dir_sapcar_default_managednode``  | ``"/usr/sap/hostctrl/exe"`` |
 +-----------------------------------------------+-----------------------------+
@@ -90,11 +88,8 @@ None.
 Example Playbook
 ----------------
 
-You plan to install a new version (SAPHOSTAGENT50_50-20009388.SAR) of the SAP Host Agent on LPAR ibmaixserver01.mycorp.com.
+The example playbook is used to upgrade the SAP Host Agent to patch level 50 on several hosts. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The necessary SAP Host Agent archive (SAPHOSTAGENT50_50-20009388.SAR) must have been downloaded from the SAP Software Distribution Center and stored in directory /tmp/downloads_sar on each of the hosts. The SAPCAR executable is available from a previous version of the SAP Host Agent in directory /usr/sap/hostctrl/exe or has been downloaded from the SAP Software Distribution Center into the download directory /tmp/downloads_sapcar. The example playbook in the current directory is named install_saphostagent.yml and has the following contents:
 
-ibmaixserver01.mycorp.com has been defined in the inventory file as shown in the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>`.
-
-The example playbook in the current directory is named install_saphostagent.yml and has the following contents:
 
 .. code:: yaml
 
@@ -102,19 +97,18 @@ The example playbook in the current directory is named install_saphostagent.yml 
       hosts: ibmaix_servers
       vars:
        - insshagnt_input_file_saphostagent_sar: "SAPHOSTAGENT50_50-20009388.SAR"
-       - insshagnt_dir_download_controlnode: "/tmp/downloads_sar"
-       - insshagnt_dir_download_sapcar_controlnode:    "/tmp/downloads_sapcar"
+       - insshagnt_dir_download_managednode: "/tmp/downloads_sar"
        - insshagnt_file_sapcar:    "SAPCAR"
        - insshagnt_dir_temp_managednode: "/tmp/hostctrl"
        - insshagnt_bool_clean_dir_temp_managednode: True
       roles:
        - role: <ansible_dir>/roles/install_saphostagent
 
-Run the installation by:
+To execute this playbook, enter the command:
 
 .. code:: yaml
 
-   ansible-playbook --verbose install_saphostagent.yml
+  ansible-playbook --verbose install_saphostagent.yml
 
 License
 -------

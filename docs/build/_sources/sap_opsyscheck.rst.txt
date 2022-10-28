@@ -5,7 +5,7 @@ Role sap_opsyscheck
 
 The role sap_opsyscheck is checking some basic operating system settings that are required to run SAP applications on the operating system AIX smoothly. It can be executed prior to the first SAP installation on a new system or partition with the operating system AIX or as a "health check" on systems or partitions where SAP is already installed. The following checks are performed:
 
-* Check if the nimsh service is running (nimsh is using port 3901 which, is used very often in a SAP installation).
+* Check if the nimsh service is running (nimsh is using port 3901, which is used very often by SAP installations).
 * Check directories /usr/sap, /sapmnt, /tmp, /var, ... for available free space.
 * Check if the NTP daemon is active.
 * Check the user limit for the number of file descriptors.
@@ -33,7 +33,7 @@ Specify one or multiple of the following tags (separated by comma) to specify wh
 | Tag                          | Usage                                                             |
 +==============================+===================================================================+
 | ``nim_service_check``        | Check if the nimsh service is running (nimsh is using port 3901,  |
-|                              | which is used very often in a SAP installation).                  |
+|                              | which is used very often by SAP installations).                   |
 +------------------------------+-------------------------------------------------------------------+
 | ``mount_free_space_check``   | Check directories /usr/sap, /sapmnt, /tmp, /var, ... for          |
 |                              | available free space.                                             |
@@ -73,9 +73,9 @@ None.
 Example Playbook
 ----------------
 
-The example playbook is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named sap_opsyscheck.yml and has the following contents:
+The example playbook is used to check operating system related settings on all configured hosts with the operating system AIX. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named sap_opsyscheck.yml and has the following contents:
 
-.. code:: YAML
+.. code:: yaml
 
     - hosts: ibmaix_servers
       roles:
@@ -83,7 +83,7 @@ The example playbook is based on the assumption that a configuration file and an
 
 To execute this playbook, enter the command:
 
-.. code:: YAML
+.. code:: yaml
   
    ansible-playbook --verbose sap_opsyscheck.yml
 

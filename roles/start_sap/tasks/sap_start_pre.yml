@@ -93,10 +93,9 @@
 # startsap_input_sap_instance_nr is defined
 ####################
 - name: Check if SAP instance is inactive
-  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ startsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep {{ ansible_hostname }} | grep -i gray | sort -k 5nr | grep '{{ ansible_hostname }}, {{ startsap_input_sap_instance_nr }}'"
+  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ startsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep {{ ansible_hostname }} | grep -i gray | sort -k 5nr | grep '{{ ansible_hostname }}, {{ startsap_input_sap_instance_nr }}' | cat"
   environment:
     LIBPATH: "{{ startsap_dir_sapctrl_managednode }}"
-  failed_when: startsap_output_selected_inactive_instance.rc >= 2
   register: startsap_output_selected_inactive_instance
   when: startsap_input_sap_instance_nr is defined
 
@@ -110,13 +109,12 @@
 # startsap_input_sap_instance_nr is undefined
 #######################
 - name: Get list of inactive SAP instances
-  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ startsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep -i gray | sort -k 5nr,"
+  shell: "{{ startsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ startsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep -i gray | sort -k 5nr,| cat"
   environment:
     LIBPATH: "{{ startsap_dir_sapctrl_managednode }}"
   args:
     chdir: "{{ startsap_dir_sapctrl_managednode }}"
   register: startsap_output_selected_inactive_instance
-  failed_when: startsap_output_selected_inactive_instance.rc >= 2
   when: startsap_input_sap_instance_nr is undefined
 
 - name: Set variable for inactive SAP instance
@@ -127,11 +125,7 @@
 - name: Error if no SAP instance is inactive
   fail:
     msg: "Error: No inactive SAP instance found for SAP system {{ startsap_input_sap_sid }}"
-    #failed_when: startsap_input_sap_instance_nr is undefined
   failed_when: startsap_list_instances_to_start is undefined
-#- name: Set variable for inactive instance
-#  set_fact:
-#    startsap_list_instances_to_start:  "{{ startsap_output_selected_inactive_instance.stdout_lines }}"
 
 ######################################################
 # Display SAP start commands

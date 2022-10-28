@@ -3,7 +3,7 @@
 Role save_dir
 ==============
 
-The role save_dir can be used to save the content of a given directory. Currently the role supports saving SAP work directories, such as /usr/sap/``sid``/``instance``/work. The content of the selected directory is compressed with the tar utility and saved to a directory that is specified through an input parameter. The compressed archive will not include core files and soft links.
+The role save_dir can be used to save the content of a given directory. Currently the role supports saving SAP work directories, such as /usr/sap/``sid``/``instance``/work. The content of the selected directory is compressed with the tar utility and saved to a directory that is specified through an input parameter. The compressed archive will not include core files.
 
 To protect the resulting output files from being overwritten, names consisting of the following components will be generated:
 
@@ -72,14 +72,12 @@ None.
 Example Playbook
 ----------------
 
-You plan to save the working directory ``/usr/sap/KD1/D00/work`` of your SAP system KD1.
-
-You have created the following file save_logs.yml:
+The example playbook is used to save the working directory ``/usr/sap/KD1/D00/work`` of SAP system KD1 on a host named ibmaixserver02.mycorp.com. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The example playbook in the current directory is named save_logs.yml and has the following contents:
 
 .. code:: yaml
 
     - name: Save SAP work directory
-      hosts: ibmaix_servers
+      hosts: ibmaixserver02.mycorp.com
       vars:
        - save_work_dir_input_dirname: "/usr/sap/KD1/D00/work"
        - save_work_dir_input_save_dir: "/tmp"
@@ -87,7 +85,7 @@ You have created the following file save_logs.yml:
       roles:
        - role: <ansible-dir>/roles/sap_save_work_dir
 
-Run the save of the work directory /usr/sap/KD1/D00/work by executing:
+To execute this playbook, enter the command:
 
 .. code:: yaml
 

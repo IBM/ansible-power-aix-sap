@@ -50,7 +50,7 @@ Variables
 +-------------------------------------+------------------------------------------------------------------------------+----------+
 | ``stopsap_input_sap_sid``           | SAP system ID                                                                | Yes [2]_ |
 +-------------------------------------+------------------------------------------------------------------------------+----------+
-| ``stopsap_input_sap_instance_nr``   | SAP instance number                                                          | No [3]_  |
+| ``stopsap_input_sap_instance_nr``   | SAP instance number (without leading zero in case of a single-digit number)  | No [3]_  |
 +-------------------------------------+------------------------------------------------------------------------------+----------+
 | ``stopsap_softtimeout``             | softtimeout in seconds: -1 = infinite wait, 0 = hard shutdown                | No [4]_  |
 +-------------------------------------+------------------------------------------------------------------------------+----------+
@@ -88,30 +88,23 @@ None.
 Example Playbook
 ----------------
 
-You plan to stop a SAP system with SAP SID (``stopsap_input_sap_sid``) PRD with instance number (``stopsap_input_sap_instance_nr``) 3 on LPAR ibmaixserver01.mycorp.com
+The example playbook is used to stop all instances of an SAP system with the SAP system ID (SID) PRD. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The ASCS instance is installed on host ibmaixserver01.mycorp.com, and the SAP start services for SAP system PRD are active on all hosts that have instances for SAP system PRD. The example playbook in the current directory is named stop_sap.yml and has the following contents:
 
-ibmaixserver01.mycorp.com has been defined in the inventory file as shown in the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>`.
+.. code:: YAML
 
-You have created the following file stop_sap.yml
+     - hosts: ibmaixserver01.mycorp.com
+       vars:
+       - stopsap_input_sap_sid: "PRD"
+       roles:
+       - role: <ansible_dir>/roles/stop_sap
 
-.. code:: yaml
+To execute this playbook, enter the command:
 
-       - hosts: ibmaix_servers
-         vars:
-         - stopsap_input_sap_sid: "PRD"
-         - stopsap_input_sap_instance_nr: 3
-         roles:
-         - role: <ansible_dir>/roles/stop_sap
-
-Run the Stop of SAP System PRD by:
-
-.. code:: yaml
+.. code:: YAML
 
    ansible-playbook --verbose stop_sap.yml -t sap_stop_instances
-   
-**Remark**
 
-The current version does not accept SAP instance numbers with a leading '0'. So, '3' is valid but '03' is not.
+Note: When using the role stop_sap with tag ``-t sap_stop_instances`` to stop instances of an SAP system on several hosts, you only need to execute the role on one host, typically the host that holds the central services instance. When using the role stop_sap with tag ``-t sap_stop_services`` to stop the SAP start services, you must execute it on all hosts that hold SAP instances for the specified SAP system.
 
 License
 -------

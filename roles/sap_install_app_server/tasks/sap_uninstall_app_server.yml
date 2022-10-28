@@ -78,14 +78,14 @@
   when: uninsappsvr_initfile_NW_readProfileDir_check.stdout == ""
 
 - name: Check {{ uninsappsvr_initfile_NW_readProfileDir_check.stdout }}
-  stat: 
+  stat:
     path: "{{ uninsappsvr_initfile_NW_readProfileDir_check.stdout }}"
   register: uninsappsvr_chk_usr_sap_profile
 
 - name: fail when the profile directory does not exist
-  fail: 
+  fail:
    msg: "ERROR: the profile directory {{ uninsappsvr_initfile_NW_readProfileDir_check.stdout }} does not exist"
-  when: not uninsappsvr_chk_usr_sap_profile.stat.exists 
+  when: not uninsappsvr_chk_usr_sap_profile.stat.exists
 
 - name: Check NW_Uninstall:GENERIC.IND.PD params in {{ insappsvr_input_file_initfile }}
   shell: "grep 'NW_Uninstall:GENERIC.IND.PD' {{ uninsappsvr_input_file_inifile }} | grep '#'"
@@ -116,7 +116,7 @@
   when:  uninsappsvr_input_swpm_version == "SWPM20"
 
 - name: Uninstall App server
-  command: "./sapinst SAPINST_INPUT_PARAMETERS_URL={{ uninsappsvr_input_file_inifile }} SAPINST_EXECUTE_PRODUCT_ID=NW_Uninstall:GENERIC.IND.PD SAPINST_SKIP_DIALOGS=true SAPINST_START_GUISERVER=false"
+  command: "./sapinst SAPINST_INPUT_PARAMETERS_URL={{ uninsappsvr_input_file_inifile }} SAPINST_EXECUTE_PRODUCT_ID=NW_Uninstall:GENERIC.IND.PD SAPINST_SKIP_DIALOGS=true SAPINST_START_GUISERVER=true"
   register: insappsvr_cmd_install_sap_appserver
   args:
     chdir: "{{ insappsvr_dir_swpm_managednode }}"

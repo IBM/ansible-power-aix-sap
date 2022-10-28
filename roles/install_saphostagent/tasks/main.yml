@@ -17,9 +17,10 @@
 
 - name: Tags check
   fail:
-    msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role ROLE: install_saphostagent"
-  when: "not 'install_saphostagent' in ansible_run_tags"
-  when: "not 'all' in ansible_run_tags"
+    msg: "Error - Tag {{ ansible_run_tags }} is undefined. The following tags are supported by role install_saphostagent: 'install_saphostagent' or 'all' (default)."
+  when:
+    - "not 'install_saphostagent' in ansible_run_tags"
+    - "not 'all' in ansible_run_tags"
   tags: always
 
 # Install SAPHOSTAGENT using SAR file

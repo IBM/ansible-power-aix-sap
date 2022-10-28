@@ -18,7 +18,7 @@
 ###########################################
 
 ###########################################
-# PreCheck SAP sid
+# Check SAP sid
 ###########################################
 - name: Check if stopsap_input_sap_sid variable is provided
   fail:
@@ -96,10 +96,9 @@
 # stopsap_input_sap_instance_nr is defined
 ####################
 - name: Check if SAP instance is active
-  shell: "{{ stopsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ stopsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep {{ ansible_hostname }} | grep -i green | sort -k 5nr | grep '{{ ansible_hostname }}, {{ stopsap_input_sap_instance_nr }}'"
+  shell: "{{ stopsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ stopsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep {{ ansible_hostname }} | grep -i green | sort -k 5nr | grep '{{ ansible_hostname }}, {{ stopsap_input_sap_instance_nr }}' | cat"
   environment:
     LIBPATH: "{{ stopsap_dir_sapctrl_managednode }}"
-  failed_when: stopsap_output_selected_active_instance.rc >= 2
   register: stopsap_output_selected_active_instance
   when: stopsap_input_sap_instance_nr is defined
 
@@ -112,12 +111,11 @@
 # stopsap_input_sap_instance_nr is undefined
 #######################
 - name: Get list of active SAP instances
-  shell: "{{ stopsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ stopsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep -i green | sort -k 5nr,"
+  shell: "{{ stopsap_dir_sapctrl_managednode }}/sapcontrol -nr {{ stopsap_sap_sid_profile_name.stdout.split()[2] }} -function GetSystemInstanceList | grep -i green | sort -k 5nr, | cat"
   environment:
     LIBPATH: "{{ stopsap_dir_sapctrl_managednode }}"
   args:
     chdir: "{{ stopsap_dir_sapctrl_managednode }}"
-  failed_when: stopsap_output_selected_active_instance.rc >= 2
   register: stopsap_output_selected_active_instance
   when: stopsap_input_sap_instance_nr is undefined
 
@@ -129,7 +127,6 @@
 - name: Error if no SAP instance is active
   fail:
     msg: "Error: No active SAP instance found for SAP system {{ stopsap_input_sap_sid }}"
-    #failed_when: stopsap_input_sap_instance_nr is undefined
   failed_when: stopsap_list_instances_to_stop  is undefined
 
 #- name: Set variable for active instance

@@ -84,19 +84,18 @@
     mode: 0755
     
 ######################################################
-# Search SAPCAR in sapcar directory on control node
+# Search SAPCAR in sapcar directory on managed node
 ######################################################
-- name: Search for SAPCAR in {{ upgsapkrn_dir_download_sapcar_controlnode }} directory
+- name: Search for SAPCAR in {{ upgsapkrn_dir_download_sapcar_managednode }} directory
   shell:
-    chdir: "{{ upgsapkrn_dir_download_sapcar_controlnode }}"
+    chdir: "{{ upgsapkrn_dir_download_sapcar_managednode }}"
     cmd: 'ls -d {{ upgsapkrn_file_sapcar }} | cat'
-  delegate_to: localhost
   register: upgsapkrn_output_search_sapcar
   when: upgsapkrn_fact_sapcar_file is undefined
   
 - name: If found, set SAPCAR path variable
   ansible.builtin.set_fact:
-    upgsapkrn_fact_sapcar_file: "{{ upgsapkrn_dir_download_sapcar_controlnode | default(upgsapkrn_fact_sapcar_file) }}"
+    upgsapkrn_fact_sapcar_file: "{{ upgsapkrn_dir_download_sapcar_managednode | default(upgsapkrn_fact_sapcar_file) }}"
   when: upgsapkrn_output_search_sapcar.stdout != "" and upgsapkrn_fact_sapcar_file is undefined
 
 ######################################################
@@ -107,6 +106,7 @@
     src: "{{ upgsapkrn_fact_sapcar_file }}/{{ upgsapkrn_file_sapcar }}"
     dest: "{{ upgsapkrn_dir_upload_managednode }}/{{ upgsapkrn_file_sapcar }}"
     mode: '0755'
+    remote_src: yes
   when: upgsapkrn_output_search_sapcar.stdout != ""
 
 - name: If found, set SAPCAR path variable
@@ -115,20 +115,19 @@
   when: upgsapkrn_output_search_sapcar.stdout != ""
  
 ######################################################
-# Search SAPCAR in sar directory on control node
+# Search SAPCAR in sar directory on managed node
 ######################################################
-- name: Search for SAPCAR in {{ upgsapkrn_dir_download_sar_controlnode }} directory
+- name: Search for SAPCAR in {{ upgsapkrn_dir_download_sar_managednode }} directory
   shell:
-    chdir: "{{ upgsapkrn_dir_download_sar_controlnode }}"
+    chdir: "{{ upgsapkrn_dir_download_sar_managednode }}"
     cmd: 'ls -d {{ upgsapkrn_file_sapcar }} | cat'
-  delegate_to: localhost
-  register: upgsapkrn_output_search_sapcar_download_sar_controlnode
+  register: upgsapkrn_output_search_sapcar_download_sar_managednode
   when: upgsapkrn_fact_sapcar_file_in_saphostagent_dir is undefined
    
 - name: If found, set SAPCAR path variable
   ansible.builtin.set_fact:
-    upgsapkrn_fact_sapcar_file_in_saphostagent_dir: "{{ upgsapkrn_dir_download_sar_controlnode | default(upgsapkrn_fact_sapcar_file) }}"
-  when: upgsapkrn_fact_sapcar_file is undefined and upgsapkrn_fact_sapcar_file_in_saphostagent_dir is undefined and upgsapkrn_output_search_sapcar_download_sar_controlnode.stdout != ""
+    upgsapkrn_fact_sapcar_file_in_saphostagent_dir: "{{ upgsapkrn_dir_download_sar_managednode | default(upgsapkrn_fact_sapcar_file) }}"
+  when: upgsapkrn_fact_sapcar_file is undefined and upgsapkrn_fact_sapcar_file_in_saphostagent_dir is undefined and upgsapkrn_output_search_sapcar_download_sar_managednode.stdout != ""
  
 ######################################################
 # if SAPCAR available , upload to managed node
@@ -138,17 +137,17 @@
     src: "{{ upgsapkrn_fact_sapcar_file_in_saphostagent_dir }}/{{ upgsapkrn_file_sapcar }}"
     dest: "{{ upgsapkrn_dir_upload_managednode }}/{{ upgsapkrn_file_sapcar }}"
     mode: '0755'
-  when: upgsapkrn_output_search_sapcar_download_sar_controlnode.stdout != "" and upgsapkrn_fact_sapcar_file is undefined
+  when: upgsapkrn_output_search_sapcar_download_sar_managednode.stdout != "" and upgsapkrn_fact_sapcar_file is undefined
 
 - name: If found, set SAPCAR path variable
   ansible.builtin.set_fact:
     upgsapkrn_fact_sapcar_file: "{{ upgsapkrn_dir_upload_managednode }}"
-  when: upgsapkrn_output_search_sapcar_download_sar_controlnode.stdout != "" and upgsapkrn_fact_sapcar_file is undefined
+  when: upgsapkrn_output_search_sapcar_download_sar_managednode.stdout != "" and upgsapkrn_fact_sapcar_file is undefined
   
 ################################################################
 # Search SAPCAR in the SAP kernel exe dir on managed node
 ################################################################
-- name: Search for SAPCAR in {{ upgsapkrn_dir_download_sar_controlnode  }} directory
+- name: Search for SAPCAR in {{ upgsapkrn_dir_download_sar_managednode  }} directory
   shell:
     chdir: "{{ upgsapkrn_dir_sapcar_default_managednode }}"
     cmd: 'ls -d {{ upgsapkrn_file_sapcar }} | cat'
@@ -165,40 +164,63 @@
 ######################################################
 - name: Check SAPCAR in {{ upgsapkrn_fact_sapcar_file}}
   fail:
-    msg: "Error: no SAPCAR found in {{ upgsapkrn_dir_download_sapcar_controlnode }} , {{ upgsapkrn_dir_download_sar_controlnode }} or {{ upgsapkrn_dir_sapcar_default_managednode }}"
+    msg: "Error: no SAPCAR found in {{ upgsapkrn_dir_download_sapcar_managednode }} , {{ upgsapkrn_dir_download_sar_managednode }} or {{ upgsapkrn_dir_sapcar_default_managednode }}"
   when: upgsapkrn_fact_sapcar_file is undefined
 
-######################################################
-# Search SAR files in directory on control node
-######################################################
-- name: Search for SAR files in folder {{ upgsapkrn_dir_download_sar_controlnode  }}
-  find:
-    paths: "{{ upgsapkrn_dir_download_sar_controlnode }}"
-    patterns: '*.sar,*.SAR'
-  delegate_to: localhost
-  register: upgsapkrn_output_search_sapcar
+###############################################################################
+# Search SAR files in directory on managed node
+###############################################################################
+- name: Search for SAR files in folder {{ ansible_facts['nodename'] }}:{{ upgsapkrn_dir_download_sar_managednode }}
+  ## shell code can result into "file not found" and should not return any error
+  shell: ls {{ item }} 2>/dev/null || true
+  ## shell code could may be not work well for csh
+  ## try to make sure that shell type "sh" is used. but maybe a link on some systems to
+  ## call a diffrent shell
+  args:
+    executable: /bin/sh
+  register: files
+  with_items:
+    - "{{ upgsapkrn_dir_download_sar_managednode }}/*.SAR"
+    - "{{ upgsapkrn_dir_download_sar_managednode }}/*.sar"
 
-######################################################
+###############################################################################
 # end, if no SAR files available
-######################################################
-- name: Check SAR files
+###############################################################################
+- name: "Check amount of SAR files found"
+  ## Check task: this should fail as soon of not sufficient amount of SAR files found to copy
   fail:
-    msg: "Error: No SAR files found in {{ upgsapkrn_dir_download_sar_controlnode }}"
-  when: upgsapkrn_output_search_sapcar.matched == 0
+    msg: "ERROR: no sar files found in directory: {{ upgsapkrn_dir_download_sar_managednode }} "
+  when: files.results|map(attribute='stdout_lines')|list|unique|first|length < 1
 
-######################################################
-# Upload SAR files to dir on managed node
-######################################################
-- name: Upload SAR files to dir {{ upgsapkrn_dir_upload_managednode }} on managed node
+###############################################################################
+# Prepare SAR files destination directory on managed node
+###############################################################################
+- name: "Make sure destination Dir exists: {{ ansible_facts['nodename'] }}:{{ upgsapkrn_dir_upload_managednode }}"
+  shell:
+    cmd: mkdir -p "{{ upgsapkrn_dir_upload_managednode }}"
+    warn: false
+
+###############################################################################
+# Permissions for SAR files destination directory on managed node
+###############################################################################
+- name: "Set permissions on destination Dir: {{ ansible_facts['nodename'] }}:{{ upgsapkrn_dir_upload_managednode }}"
+  shell:
+    cmd: chmod 0755 "{{ upgsapkrn_dir_upload_managednode }}"
+    warn: false
+
+###############################################################################
+# Copy SAR files to final destination dir on managed node
+###############################################################################
+- name: "Copy SAR files now to {{ ansible_facts['nodename'] }}:{{ upgsapkrn_dir_download_sar_managednode }}"
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ upgsapkrn_dir_upload_managednode }}"
     owner: "{{ upgsapkrn_input_sap_adm }}"
     group: "{{ upgsapkrn_input_sap_sys }}"
-    mode: 0755
-  with_fileglob:
-    - "{{ upgsapkrn_dir_download_sar_controlnode }}/*.SAR"
-    - "{{ upgsapkrn_dir_download_sar_controlnode }}/*.sar"
+    mode: 0644
+    ## all action on remote host:
+    remote_src: yes
+  with_items: "{{ files.results|map(attribute='stdout_lines')|list }}"
 
 ######################################################
 # Extract SAR files into dir on managed node

@@ -3,32 +3,17 @@
 Role upgrade_sap_hana_client
 ============================
 
-The SAP HANA client provides a set of utilities and drivers to connect to and query a SAP HANA database from multiple programming APIs, such as Node.js, Python or Java as shown below.
+The SAP HANA client is needed to access a remote SAP HANA database from an SAP Application Server ABAP running on AIX. It can be downloaded from the Software Distribution Center in the SAP Support Portal (`SWDC <https://support.sap.com/swdc>`_) as an SAP Archive (SAR) file. For preventive maintenance, it is advised to upgrade the SAP HANA client from time to time with the latest version. The role upgrade_sap_hana_client is used to upgrade an existing SAP HANA client from a downloaded SAR file. The role is not intended to install the SAP HANA client on a system where it has not been installed previously. Both SAP HANA client versions are supported, version 1 and version 2.
 
+To extract the downloaded SAR file, you must provide the SAP utility SAPCAR and provide it's location in variable ``upglocation_of_SAPCAR_utility_managednode``. By default, SAPCAR is being searched in directory ``/usr/sap/ansible/downloads``.
 
-SAP is providing bug fixes and enhancements for all their components. Updates for the SAP HANA client are provided by shipping the content in a SAP HANA Client SAR file provided on the the SAP Support Portal (`SWDC <https://support.sap.com/swdc>`_). It is advised to update the SAP HANA Client with the current version from time to time as preventive action.  The role upgrade_sap_HANA_client can be used to upgrade the SAP HANA Client.
+Before the already installed SAP HANA client is updated, the currently installed version is backed up into a compressed file that follows the naming pattern ``__save_HDB_Client.<Timestamp-Year-Month-Day-Hour-Minute-Second>.tar.Z``. By default, the backup file is saved in directory ``/usr/sap/ansible/hdb_client_backup``. Older backups in this directory are not cleaned up automatically, so you may want to check and clean up the directory manually from time to time.
 
-This role is used with the tag ``-t upgrade_sap_hana_client``. The role needs a couple of variables described below.
-Let's assume you plan to upgrade your SAP HANA client with the newest version: ``IMDB_CLIENT20_013_13-80002090.SAR``.
-The you have to provide this SAR file as well as the SAPCAR utility on the target host (the host where you plan to upgrade your SAP HANA Client).
-You can specify the location of these files as well as the names. The SAP HANA Client SAR file name as well as the SAPCAR utility name change over time.
-Then the role is checking some prerequisites like:
-- does the specified SAPCAR Utility exists
-- does the specified SAP HANA Client SAR file exist
-- does the owner of the SAP HANA Client directory exists
-.....
+When you upgrade an SAP HANA client, the downloaded SAR file is extracted into a temporary directory, by default ``/usr/sap/ansible/working_dir/hdb_client``. After a successful installation of the SAP HANA client, this directory will be deleted. After some consistency checks, the upgrade of the SAP HANA client will be performed by executing the program ``hdbinst`` with the parameter ``--path`` and the path name specified in variable ``upgdir_of_HANA_client_managednode``. The default target path name is ``/usr/sap/hdbclient``.
 
-If all these checks are successful, the SAP HANA Client directory will be tarred, compressed and backuped with the following file name pattern:
-__save_HDB_Client.<Timestamp-Year-Month-Day-Hour-Minute-Second>.tar.Z
+The upgrade operation will fail if an SAP instance is active that is using the currently installed SAP HANA client. In this case, you need to stop the active SAP application server instances and repeat the upgrade.
 
-After creation of the backup the ``IMDB_CLIENT20_013_13-80002090.SAR`` will be extracted to a temporary directory. Then it will be checked that the extracted file was really a
-HANA Client SAR file. If all this is ok, then the HANA Client will be updated.
-The update will fail if an Application Server (AS) is using the HANA Client to be updated. An error is issued as well as the hint that an AS using this client might be active.
-Then you have to shutdown all the SAP instances using this Client.
-
-
-
-You can find more information about the SAP HANA Client Installation and Update ind the SAP blog: (`SAP HANA Client Installation and Update <https://blogs.sap.com/2017/12/14/sap-hana-2.0-client-installation-and-update-by-the-sap-hana-academy>`_)
+You can find more information about the SAP HANA Client Installation and Update in the SAP blog: (`SAP HANA Client Installation and Update <https://blogs.sap.com/2017/12/14/sap-hana-2.0-client-installation-and-update-by-the-sap-hana-academy>`_)
 
 .. contents:: Table of contents
    :depth: 2
@@ -36,15 +21,9 @@ You can find more information about the SAP HANA Client Installation and Update 
 Requirements
 ------------
 
-
 This role is intended for the operating system IBM AIX. The target system must be enabled to execute Ansible playbooks. For details, see the prerequisites section in :ref:`Ansible Content for IBM Power Systems - AIX with SAP Software <IBM.ansible-power-aix-sap.docsite.install_and_config.prerequisites>`.
 
-Checking prerequisites for installing the SAP HANA Client
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Check that ``/usr/sap`` has enough free diskspace for creating and holding the backup files as well as the temporary file.
-All these files and directories will be created under ``/usr/sap/ansible``
-
+Make sure that the file system that holds the directory ``/usr/sap`` has enough free diskspace for creating and holding the backup files as well as the temporary file. By default, these files will be created in directory ``/usr/sap/ansible``.
 
 Tags
 ----
@@ -67,7 +46,7 @@ Variables
 +================================================+=======================================================================================================+==========+
 | ``upgbackup_for_dir_hana_client_managednode``  | Backup directory to backup the HANA client directory                                                  | Yes [1]_ |
 +------------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
-| ``upgowner_of_client_dir``                     | Owner of the SAP HANA Client directory                                                                | No  [1]_ |
+| ``upgowner_of_client_dir``                     | Owner of the SAP HANA Client directory                                                                | No       |
 +------------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
 | ``upgtemp_working_dir_managednode``            | Temporary directory, that will be created on the target host for extracting the HANA Client SAR file  | Yes [1]_ |
 +------------------------------------------------+-------------------------------------------------------------------------------------------------------+----------+
@@ -101,7 +80,7 @@ Suggested default values are provided in defaults/main.yml:
 +---------------------------------------------------+------------------------------------------------+
 | ``upglocation_of_HANA_Client_SAR_managednode``    | ``"/usr/sap/ansible/downloads"``               |
 +---------------------------------------------------+------------------------------------------------+
-| ``upglocation_of_SAPCAR utility_managednode``     | ``"/usr/sap/ansible/downloads"``               |
+| ``upglocation_of_SAPCAR_utility_managednode``     | ``"/usr/sap/ansible/downloads"``               |
 +---------------------------------------------------+------------------------------------------------+
 | ``upgsapcar_file_name``                           | ``"SAPCAR"``                                   |
 +---------------------------------------------------+------------------------------------------------+
@@ -120,11 +99,7 @@ None.
 Example Playbook
 ----------------
 
-You plan to install a new version (IMDB_CLIENT20_013_13-80002090.SAR) of the SAP HANA Client  on LPAR ibmaix_servers.
-
-ibmaix_servers has been defined in the inventory file as shown in the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>`.
-
-The example playbook in the current directory is named  upg_hdb_client.yaml and has the following contents:
+The example playbook is used to upgrade the SAP HANA client software for an SAP system named HDA on several hosts. It is based on the assumption that a configuration file and an inventory file with contents similar to the :ref:`configuration documentation <IBM.ansible-power-aix-sap.docsite.install_and_config.configuration>` exist in the current directory. The necessary SAP archive file IMDB_CLIENT20_013_13-80002090.SAR and the SAPCAR tool must have been downloaded from the SAP Software Distribution Center and stored in directory /usr/sap/ansible/HDA/hdbclient_work. The playbook is located in the current directory, named upg_hdb_client.yaml and has the following contents:
 
 .. code:: yaml
 
@@ -141,12 +116,14 @@ The example playbook in the current directory is named  upg_hdb_client.yaml and 
       roles:
        - role: <ansible_dir>/roles/upgrade_sap_hana_client
 
-Run the installation by:
+To execute this playbook, enter the command:
 
 .. code:: yaml
 
    ansible-playbook --verbose -t upgrade_sap_hana_client upg_hdb_client.yaml
 
+
+License
 -------
 
 This collection is licensed under the `Apache 2.0 license <https://www.apache.org/licenses/LICENSE-2.0>`_.

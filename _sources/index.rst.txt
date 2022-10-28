@@ -30,6 +30,8 @@ The following roles for administrator tasks with SAP on IBM AIX are provided:
 
   - :ref:`Stop SAP instances <IBM.ansible-power-aix-sap.docsite.stop_sap>`
 
+  - :ref:`Upgrade the client software for an IBM Db2 LUW database <IBM.ansible-power-aix-sap.docsite.upgrade_ibm_db2_client>`
+
   - :ref:`Upgrade the client software for an SAP HANA database <IBM.ansible-power-aix-sap.docsite.upgrade_sap_hana_client>`
 
   - :ref:`Upgrade the kernel of an already existing SAP system <IBM.ansible-power-aix-sap.docsite.upgrade_sap_kernel>`
@@ -73,6 +75,7 @@ Copyright IBM Corporation 2021,2022
    start_sap
    stop_db
    stop_sap
+   upgrade_ibm_db2_client
    upgrade_sap_hana_client
    upgrade_sap_kernel
 

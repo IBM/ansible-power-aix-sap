@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="start_sap.html">Role start_sap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stop_db.html">Role stop_db</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stop_sap.html">Role stop_sap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upgrade_ibm_db2_client.html">Role upgrade_ibm_db2_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="upgrade_sap_hana_client.html">Role upgrade_sap_hana_client</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Role upgrade_sap_kernel</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a><ul>
@@ -101,7 +102,7 @@
              
   <section id="role-upgrade-sap-kernel">
 <span id="ibm-ansible-power-aix-sap-docsite-upgrade-sap-kernel"></span><h1><a class="toc-backref" href="#id16">Role upgrade_sap_kernel</a><a class="headerlink" href="#role-upgrade-sap-kernel" title="Permalink to this headline"></a></h1>
-<p>The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center (<a class="reference external" href="https://support.sap.com/swdc">SWDC</a>) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code>.</p>
+<p>The role upgrade_sap_kernel is used to upgrade the kernel of an already installed SAP system with new code that has been downloaded from the SAP Sowftware Distribution Center (<a class="reference external" href="https://support.sap.com/swdc">SWDC</a>) in SAP Archive (SAR) files. The SAR files must be available in the directory that is specified in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_managednode</span></code>.</p>
 <p>The role upgrade_sap_kernel needs the SAP System ID as input in variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sid</span></code>, <code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_adm</span></code> and <code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sys</span></code>.</p>
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title">Table of contents</p>
@@ -162,11 +163,11 @@
 <td><p>SAP system group ID</p></td>
 <td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id2">1</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_managednode</span></code></p></td>
 <td><p>Directory path on the Ansible host where SAR file is located.</p></td>
 <td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id3">1</a> <a class="footnote-reference brackets" href="#id14" id="id4">2</a></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_controlnode</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_managednode</span></code></p></td>
 <td><p>Directory path on the Ansible host where SAPCAR file is located.</p></td>
 <td><p>Yes <a class="footnote-reference brackets" href="#id13" id="id5">1</a> <a class="footnote-reference brackets" href="#id15" id="id6">3</a></p></td>
 </tr>
@@ -203,10 +204,10 @@
 <dd><p>Default provided.</p>
 </dd>
 <dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
-<dd><p>At least one sar file is required in <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code> matching the pattern “*.SAR” or “*.sar”.</p>
+<dd><p>At least one sar file is required in <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_managednode</span></code> matching the pattern “*.SAR” or “*.sar”.</p>
 </dd>
 <dt class="label" id="id15"><span class="brackets"><a class="fn-backref" href="#id6">3</a></span></dt>
-<dd><p>When <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_controlnode</span></code> is undefined, SAPCAR will be searched in <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code> and <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_sapcar_default_managednode</span></code>.</p>
+<dd><p>When <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_managednode</span></code> is undefined, SAPCAR will be searched in <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_managednode</span></code> and <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_sapcar_default_managednode</span></code>.</p>
 </dd>
 </dl>
 </section>
@@ -231,10 +232,10 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_input_sap_sys</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;sapsys&quot;</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_controlnode</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sar_managednode</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;/tmp/sar_prov_dir&quot;</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_controlnode</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_download_sapcar_managednode</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;/tmp/sapcar_prov_dir&quot;</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_sapcar_default_managednode</span></code></p></td>
@@ -264,19 +265,20 @@
 </section>
 <section id="example-playbook">
 <h2><a class="toc-backref" href="#id21">Example Playbook</a><a class="headerlink" href="#example-playbook" title="Permalink to this headline"></a></h2>
-<p>You are running a SAP instance on LPARs defined by ibmaix_servers with SAP SID  (upgsapkrn_input_sap_sid) PRD.
-You plan to upgrade a SAP system kernel on these LPARs.</p>
-<p>ibmaix_servers has been defined in the inventory file as shown in the <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"><span class="std std-ref">configuration documentation</span></a>.</p>
-<p>You have created the following file upgrade_sap_kernel.yml</p>
+<p>The example playbook is used to replace the existing kernel of SAP system PRD with a new stack kernel on several hosts. It is based on the assumption that a configuration file and an inventory file with contents similar to the <a class="reference internal" href="install_and_config.html#ibm-ansible-power-aix-sap-docsite-install-and-config-configuration"><span class="std std-ref">configuration documentation</span></a> exist in the current directory. The necessary archives and the SAPCAR tool must have been downloaded from the SAP Software Distribution Center and stored in the NFS share mounted on /mnt/a. The files will be copied into directory /usr/sap/tmp/sar_upload_dir (default value for variable <code class="docutils literal notranslate"><span class="pre">upgsapkrn_dir_upload_managednode</span></code>). The playbook is located in the current directory, named MYupgrade_sap_kernel.yml and has the following contents:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibmaix_servers</span><span class="w"></span>
 <span class="w">  </span><span class="nt">vars</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">upgsapkrn_input_sap_sid</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PRD&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">upgsapkrn_input_sap_sid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PRD</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">upgsapkrn_dir_download_sar_managednode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/mnt/a</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">upgsapkrn_dir_download_sapcar_managednode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/mnt/a</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ansible_become_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">su</span><span class="w"></span>
 <span class="w">  </span><span class="nt">roles</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;ansible_dir&gt;/roles/upgrade_sap_kernel</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">upgrade_sap_kernel</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Run the Upgrade of SAP System PRD by:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook --verbose upgrade_sap_kernel.yml</span><span class="w"></span>
+<p>Note: By specifying variable <code class="docutils literal notranslate"><span class="pre">ansible_become_user:</span> <span class="pre">su</span></code>, you select a method that is available on any AIX server. The default value would be <code class="docutils literal notranslate"><span class="pre">sudo</span></code>, which may or may not be available on your server (see <a class="reference external" href="https://docs.ansible.com/ansible/latest/user_guide/become.html">Ansible User Guide: Understanding privilege escalation: become</a>). If you want to use RBAC, you must specify <code class="docutils literal notranslate"><span class="pre">ansible_become_method:</span> <span class="pre">swrole</span></code>.</p>
+<p>To execute this playbook, enter the command:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ansible-playbook -i my_inventory.yaml MYupgrade_sap_kernel.yml</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
